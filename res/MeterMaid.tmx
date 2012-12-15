@@ -3,9 +3,21 @@
  <tileset firstgid="1" name="Tiles" tilewidth="89" tileheight="89">
   <image source="testTiles.png" width="267" height="89"/>
  </tileset>
+ <tileset firstgid="4" name="Objects" tilewidth="89" tileheight="89">
+  <image source="player.png" width="89" height="89"/>
+  <tile id="0">
+   <properties>
+    <property name="_the" value="player"/>
+    <property name="name" value="Player"/>
+   </properties>
+  </tile>
+ </tileset>
  <layer name="map" width="9" height="7">
   <data encoding="base64" compression="zlib">
    eJxjZmBgYELCzFj42MSGgxoASnwAlA==
   </data>
  </layer>
+ <objectgroup name="player" width="9" height="7">
+  <object gid="4" x="356" y="307"/>
+ </objectgroup>
 </map>
