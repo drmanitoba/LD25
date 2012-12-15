@@ -11,7 +11,24 @@ function the.app:onRun()
 end
 
 function the.app:onBeginFrame()
-  --  For player, handle check to see if capable of movement (if moving)
+  if the.player.movingUp then
+    --  Check if space above player is open
+  elseif the.player.movingDown then
+    --  Check if space below player is open
+  end
+  
+  if the.player.movingLeft then
+    --  Check if space to the left of player is open
+  elseif the.player.movingRight then
+    --  Check if space to the right of player is open
+  end
+  
+  --  Reset player movement flags
+  the.player.movingUp = false
+  the.player.movingDown = false
+  the.player.movingLeft = false
+  the.player.movingRight = false
+  
   --  For each car, handle check to see if parking is available
 end
 
@@ -20,13 +37,31 @@ function the.app:onUpdate( time )
 end
 
 function the.app:onEndFrame()
-  --  Check for input, flag as moving
+  if the.keys:pressed('w') or the.keys:pressed('up') then
+    the.player.movingUp = true
+    the.player.movingDown = false
+  elseif the.keys:pressed('s') or the.keys:pressed('down') then
+    the.player.movingDown = true
+    the.player.movingUp = false
+  end
+  
+  if the.keys:pressed('a') or the.keys:pressed('left') then
+    the.player.movingLeft = true
+    the.player.movingRight = false
+  elseif the.keys:pressed('d') or the.keys:pressed('right') then
+    the.player.movingRight = true
+    the.player.movingLeft = true
+  end
 end
 
 ---------------------------------------------------------------------------------------------------------
 
 MovingTile = Tile:extend
 {
+  movingUp = false,
+  movingDown = false,
+  movingLeft = false,
+  movingRight = false
 }
 
 function MovingTile:move( dir )
@@ -67,12 +102,20 @@ function Car:checkForParking( dir )
   end
 end
 
+function Car:onUpdate()
+  
+end
+
 ---------------------------------------------------------------------------------------------------------
 
 Player = MovingTile:extend
 {
   image = "res/player.png"
 }
+
+function Player:onUpdate()
+  
+end
 
 ---------------------------------------------------------------------------------------------------------
 
