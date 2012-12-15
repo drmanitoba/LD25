@@ -7,12 +7,7 @@ the.app = App:new
 }
 
 function the.app.onRun( self )
-  self:add(Fill:new{ width = 16, height = 16,
-		x = (self.width - 16) / 2,
-		y = (self.height - 16) / 2,
-		fill = {0, 0, 255},
-		velocity = { rotation = math.pi / 2 }
-	})
+  self.view = MapView:new()
 end
 
 function the.app.moveY( object, positive )
@@ -38,3 +33,11 @@ function the.app.checkForParking( object, positive )
     --  Check for parking one tile down, one tile to the left
   end
 end
+
+MapView = View:extend
+{
+  onNew = function(self)
+    self:loadLayers("res/map.lua")
+    self:clampTo(self.map)
+  end
+}
