@@ -17,18 +17,18 @@ end
 function the.app:onUpdate( time )
   if the.keys:pressed('w') or the.keys:pressed('up') then
     --  Check if space above player is open
-    the.player.y = the.player.y - the.player.height
+    the.player:move(UP)
   elseif the.keys:pressed('s') or the.keys:pressed('down') then
     --  Check if space below player is open
-    the.player.y = the.player.y + the.player.height
+    the.player:move(DOWN)
   end
   
   if the.keys:pressed('a') or the.keys:pressed('left') then
     --  Check if space to the left of player is open
-    the.player.x = the.player.x - the.player.width
+    the.player:move(LEFT)
   elseif the.keys:pressed('d') or the.keys:pressed('right') then
     --  Check if space to the right of player is open
-    the.player.x = the.player.x + the.player.width
+    the.player:move(RIGHT)
   end
   
   --  For each car, handle check to see if parking is available
@@ -41,21 +41,17 @@ end
 
 MovingTile = Tile:extend
 {
-  movingUp = false,
-  movingDown = false,
-  movingLeft = false,
-  movingRight = false
 }
 
 function MovingTile:move( dir )
   if dir == UP then
-    --  Move one tile up
+    self.y = self.y - self.height
   elseif dir == DOWN then
-    --  Move one tile down
+    self.y = self.y + self.height
   elseif dir == LEFT then
-    --  Move one tile left
+    self.x = self.x - self.width
   elseif dir == RIGHT then
-    --  Move one tile right
+    self.x = self.x + self.width
   end
 end
 
