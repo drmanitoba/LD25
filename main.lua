@@ -4,23 +4,28 @@ require 'zoetrope'
 
 the.app = App:new
 {
+  fps = 6
 }
 
 function the.app:onRun()
   self.view = MapView:new()
 end
 
-function the.app:onBeginFrame()
+function the.app:onStartFrame()
   if the.player.movingUp then
     --  Check if space above player is open
+    the.player.y = the.player.y - the.player.height
   elseif the.player.movingDown then
     --  Check if space below player is open
+    the.player.y = the.player.y + the.player.height
   end
   
   if the.player.movingLeft then
     --  Check if space to the left of player is open
+    the.player.x = the.player.x - the.player.width
   elseif the.player.movingRight then
     --  Check if space to the right of player is open
+    the.player.x = the.player.x + the.player.width
   end
   
   --  Reset player movement flags
@@ -50,7 +55,7 @@ function the.app:onEndFrame()
     the.player.movingRight = false
   elseif the.keys:pressed('d') or the.keys:pressed('right') then
     the.player.movingRight = true
-    the.player.movingLeft = true
+    the.player.movingLeft = false
   end
 end
 
