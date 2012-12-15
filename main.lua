@@ -4,7 +4,7 @@ require 'zoetrope'
 
 the.app = App:new
 {
-  fps = 6
+  fps = 30
 }
 
 function the.app:onRun()
@@ -15,20 +15,66 @@ function the.app:onStartFrame()
 end
 
 function the.app:onUpdate( time )
-  if the.keys:pressed('w') or the.keys:pressed('up') then
-    --  Check if space above player is open
-    the.player:move(UP)
-  elseif the.keys:pressed('s') or the.keys:pressed('down') then
-    --  Check if space below player is open
-    the.player:move(DOWN)
+  local direction = nil
+  
+  if the.app.lastDirection then
+    print( "last direction was " .. the.app.lastDirection )
+    if the.app.lastDirection == RIGHT or the.app.lastDirection == LEFT then
+      print( "Testing left or right first" )
+      if the.keys:pressed('a','left') then
+        direction = LEFT
+      elseif the.keys:pressed('d','right') then
+        direction = RIGHT
+      end
+      
+      if the.keys:pressed('w','up') then
+        direction = UP
+      elseif the.keys:pressed('s','down') then
+        direction = DOWN
+      end
+    else
+      print( "Testing up or down first" )
+      if the.keys:pressed('w','up') then
+        direction = UP
+      elseif the.keys:pressed('s','down') then
+        direction = DOWN
+      end
+      
+      if the.keys:pressed('a','left') then
+        direction = LEFT
+      elseif the.keys:pressed('d','right') then
+        direction = RIGHT
+      end
+    end
+  else
+    print( "Last direction was nill" )
+    if the.keys:pressed('w','up') then
+      direction = UP
+    elseif the.keys:pressed('s','down') then
+      direction = DOWN
+    end
+    
+    if the.keys:pressed('a','left') then
+      direction = LEFT
+    elseif the.keys:pressed('d','right') then
+      direction = RIGHT
+    end
   end
   
-  if the.keys:pressed('a') or the.keys:pressed('left') then
-    --  Check if space to the left of player is open
-    the.player:move(LEFT)
-  elseif the.keys:pressed('d') or the.keys:pressed('right') then
-    --  Check if space to the right of player is open
-    the.player:move(RIGHT)
+  the.app.lastDirection = direction or the.app.lastDirection
+  
+  if the.player.canMove then
+    if direction == UP then
+      the.player:move(UP)
+    elseif direction == DOWN then
+      the.player:move(DOWN)
+    elseif direction == LEFT then
+      the.player:move(LEFT)
+    elseif direction == RIGHT then
+      the.player:move(RIGHT)
+    end
+    
+    the.player.canMove = false
   end
   
   --  For each car, handle check to see if parking is available
@@ -41,17 +87,21 @@ end
 
 MovingTile = Tile:extend
 {
+  movingUp = false,
+  movingDown = false,
+  movingLeft = false,
+  movingRight = false
 }
 
 function MovingTile:move( dir )
   if dir == UP then
-    self.y = self.y - self.height
+    self.y = math.max( 0, self.y - self.height )
   elseif dir == DOWN then
-    self.y = self.y + self.height
+    self.y = math.min( the.app.height - self.height, self.y + self.height )
   elseif dir == LEFT then
-    self.x = self.x - self.width
+    self.x = math.max( 0, self.x - self.width )
   elseif dir == RIGHT then
-    self.x = self.x + self.width
+    self.x = math.min( the.app.width - self.width, self.x + self.width )
   end
 end
 
@@ -89,11 +139,30 @@ end
 
 Player = MovingTile:extend
 {
-  image = "res/player.png"
+  image = "res/player.png",
+  canMove = false,
+  time = 0,
+  updateTime = 0.5,
+  targetX = 0,
+  targetY = 0
 }
 
-function Player:onUpdate()
+function Player:onNew()
+  self.targetX = self.x
+  self.targetY = self.y
+end
+
+function Player:onUpdate( time )
+  self.time = self.time + time
+  if self.time > self.updateTime then
+    self.time = self.updateTime
+  end
   
+  self.time = self.time % self.updateTime
+  
+  if self.time == 0 then
+    self.canMove = true
+  end
 end
 
 ---------------------------------------------------------------------------------------------------------
