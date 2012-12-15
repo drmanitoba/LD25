@@ -14,3 +14,19 @@ function the.app.onRun( self )
 		velocity = { rotation = math.pi / 2 }
 	})
 end
+
+function the.app.moveY( object, positive )
+  if positive then
+    
+  else
+    
+  end
+end
+
+function the.app.moveX( object, positive )
+  if positive then
+    
+  else
+    
+  end
+end
