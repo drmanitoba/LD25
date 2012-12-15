@@ -143,14 +143,10 @@ function Player:onUpdate( time )
     end
     
     if self:distance( self.targetX, self.targetY ) >= NEARLY_ZERO then
-      print( "moving" )
       self.isMoving = true
     else
-      print( "not moving" )
       self.isMoving = false
     end
-    
-    print( "" )
   end
   
   if self.isMoving then
