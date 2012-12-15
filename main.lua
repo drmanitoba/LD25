@@ -12,51 +12,29 @@ function the.app:onRun()
 end
 
 function the.app:onStartFrame()
-  if the.player.movingUp then
+end
+
+function the.app:onUpdate( time )
+  if the.keys:pressed('w') or the.keys:pressed('up') then
     --  Check if space above player is open
     the.player.y = the.player.y - the.player.height
-  elseif the.player.movingDown then
+  elseif the.keys:pressed('s') or the.keys:pressed('down') then
     --  Check if space below player is open
     the.player.y = the.player.y + the.player.height
   end
   
-  if the.player.movingLeft then
+  if the.keys:pressed('a') or the.keys:pressed('left') then
     --  Check if space to the left of player is open
     the.player.x = the.player.x - the.player.width
-  elseif the.player.movingRight then
+  elseif the.keys:pressed('d') or the.keys:pressed('right') then
     --  Check if space to the right of player is open
     the.player.x = the.player.x + the.player.width
   end
   
-  --  Reset player movement flags
-  the.player.movingUp = false
-  the.player.movingDown = false
-  the.player.movingLeft = false
-  the.player.movingRight = false
-  
   --  For each car, handle check to see if parking is available
 end
 
-function the.app:onUpdate( time )
-  --  Handle updates
-end
-
 function the.app:onEndFrame()
-  if the.keys:pressed('w') or the.keys:pressed('up') then
-    the.player.movingUp = true
-    the.player.movingDown = false
-  elseif the.keys:pressed('s') or the.keys:pressed('down') then
-    the.player.movingDown = true
-    the.player.movingUp = false
-  end
-  
-  if the.keys:pressed('a') or the.keys:pressed('left') then
-    the.player.movingLeft = true
-    the.player.movingRight = false
-  elseif the.keys:pressed('d') or the.keys:pressed('right') then
-    the.player.movingRight = true
-    the.player.movingLeft = false
-  end
 end
 
 ---------------------------------------------------------------------------------------------------------
