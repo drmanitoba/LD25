@@ -6,7 +6,7 @@ the.app = App:new
 {
 }
 
-function the.app.onRun( self )
+function the.app:onRun()
   self.view = MapView:new()
 end
 
@@ -70,8 +70,9 @@ end
 
 MapView = View:extend
 {
-  onNew = function(self)
-    self:loadLayers("res/map.lua")
-    self:clampTo(self.map)
-  end
 }
+
+function MapView:onNew()
+  self:loadLayers("res/map.lua")
+  self:clampTo(self.map)
+end
