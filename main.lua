@@ -25,18 +25,20 @@ end
 
 the.app = App:new
 {
-  fps = 30
+  fps = 30,
+  cars = nil
 }
 
 function the.app:onRun()
   self.view = MapView:new()
-
-  redCar = RedCar:new{ x = 108, y = 0}
-  blueCar = BlueCar:new{ x = 432, y = 0}
-  greenCar = GreenCar:new{ x = 162, y = 108}
-  self:add(redCar)
-  self:add(blueCar)
-  self:add(greenCar)
+  
+  self.cars = {}
+  self:addCar( "red", DOWN )
+  self:addCar( "blue", DOWN )
+  self:addCar( "green", DOWN )
+  self:addCar( "red", UP )
+  self:addCar( "blue", UP )
+  self:addCar( "green", UP )
 end
 
 function the.app:onStartFrame()
@@ -47,4 +49,21 @@ function the.app:onUpdate( time )
 end
 
 function the.app:onEndFrame()
+end
+
+function the.app:addCar( type, direction )
+  local car = nil
+  local dir = direction and direction or math.random()>0.5 and DOWN or UP
+  local idx = math.max( table.getn(self.cars)+1, 1 )
+  
+  if type == "red" then
+    car = RedCar:new{drivingDirection = dir}
+  elseif type == "blue" then
+    car = BlueCar:new{drivingDirection = dir}
+  else
+    car = GreenCar:new{drivingDirection = dir}
+  end
+  
+  self.cars[ idx ] = car
+  self:add( car )
 end
