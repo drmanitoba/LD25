@@ -7,7 +7,9 @@ Car = MovingTile:extend
   targetX = 0,
   targetY = 0,
   moveX = 0,
-  moveY = 0
+  moveY = 0,
+  upRot = math.rad( 180 ),
+  downRot = math.rad( 0 )
 }
 
 function Car:onNew()
@@ -16,17 +18,10 @@ end
 
 function Car:onUpdate()
   if self.drivingDirection == DOWN then
-    self.targetY = the.app.height + self.height
-    
     if self.y >= self.targetY then
       self:setDrivingDirection( UP )
     end
   else
-    self.targetY = -self.height
-    if self.moveY >= 0 then
-      self.moveY = self:randomizeMoveY( true )
-    end
-    
     if self.y <= self.targetY then
       self:setDrivingDirection( DOWN )
     end
@@ -51,15 +46,18 @@ function Car:setDrivingDirection( dir )
   self.drivingDirection = dir
   
   if dir == DOWN then
-    self.targetY = the.app.height + self.height
+    self.targetY = the.app.height
     self.moveY = self:randomizeMoveY( false )
     self.x = 54 * math.random( 2, 5 )
     self.y = -self.height
+    self.rotation = self.downRot
+    
   else
     self.targetY = -self.height
     self.moveY = self:randomizeMoveY( true )
     self.x = 54 * math.random( 8, 11 )
-    self.y = the.app.height + self.height
+    self.y = the.app.height
+    self.rotation = self.upRot
   end
 end
 
