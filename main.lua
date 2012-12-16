@@ -27,7 +27,8 @@ the.app = App:new
 {
   fps = 30,
   cars = nil,
-  parkingSpaces = nil
+  parkingSpaces = nil,
+  carLayer = nil
 }
 
 function the.app:onRun()
@@ -83,6 +84,9 @@ function the.app:onRun()
     ["height"] = 158
   }
   
+  self.carLayer = Group:new()
+  self:add( self.carLayer )
+  
   self.cars = {}
   self:addCar( "red", DOWN )
   self:addCar( "blue", DOWN )
@@ -103,6 +107,7 @@ end
 
 function the.app:onUpdate( time )
   --  For each car, handle check to see if parking is available
+  
 end
 
 function the.app:onEndFrame()
@@ -122,5 +127,5 @@ function the.app:addCar( type, direction )
   end
   
   self.cars[ idx ] = car
-  self:add( car )
+  self.carLayer:add( car )
 end

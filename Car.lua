@@ -35,9 +35,10 @@ function Car:onUpdate()
   end
   
   --  Collision testing
+  self:checkForCollisions()
   
   --  Parking testing
-  if self:checkForParking() then return end
+  if self:checkForParking() then return nil end
   
   self.x = self.x + self.moveX
   self.y = self.y + self.moveY
@@ -113,6 +114,48 @@ function Car:checkForParkingSpace( space )
   end
   
   return false
+end
+
+function Car:checkForCollisions()
+  local idx = table.getn( the.app.cars )
+  local car = nil
+  
+  while idx > 0 do
+    car = the.app.cars[ idx ]
+    
+    if car == self then
+      break
+    end
+    if car.parked then
+      break
+    end
+    
+    if self:collide( car ) then
+      if self.drivingDirection == UP then
+        if car.y < self.y then
+          self.y = car.y + car.height
+          self.moveY = math.min( car.moveY, self.height / math.random( 10, 30 ) )
+        else
+          car.y = self.y + self.height
+          car.moveY = math.min( self.moveY, car.height / math.random( 10, 30 ) )
+        end
+      else
+        if car.y > self.y then
+          self.y = car.y - car.height
+          self.moveY = math.min( car.moveY, self.height / math.random( 10, 30 ) )
+        else
+          car.y = self.y - self.height
+          car.moveY = math.min( self.moveY, car.height / math.random( 10, 30 ) )
+        end
+      end
+      
+      if math.abs(self.y - car.y) < self.height then
+        print( "still colliding" )
+      end
+    end
+    
+    idx = idx - 1
+  end
 end
 
 RedCar = Car:extend
