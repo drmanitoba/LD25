@@ -136,8 +136,10 @@ function the.app:onUpdate( time )
       space = self:getParkingSpace( LEFT, the.player.y )
     end
 
-    if space.occupied and space.car.parked and space.car.unattended then
+    if space and space.occupied and space.car.parked and space.car.unattended then
       print("TICKET!")
+      space.car.unattended = false
+      the.app.score = the.app.score + 150
     end
   end
 end
@@ -152,7 +154,8 @@ function the.app:getParkingSpace( dir, playerY )
   while idex > 0 do
     space = self.parkingSpaces[ idex ]
 
-    if side == space.x and ( playerY > space.y and playerY < space.y + space.height ) then
+    if not space.car then break end
+    if side == space.x and ( playerY > space.car.y and playerY < space.car.y + space.car.height ) then
       return space
     end
 
