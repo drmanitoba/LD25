@@ -185,7 +185,7 @@ function the.app:onUpdate( time )
           end
         else
           if py >= cb then
-            if py <= cf then
+            if py >= math.floor( cy + (car.height * 0.75)) and py <= cf then
               print( "Down Front" )
               --  Front
               the.player:die()
