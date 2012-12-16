@@ -139,9 +139,11 @@ function the.app:onUpdate( time )
 
     if space and space.occupied and space.car.parked and space.car.unattended then
       space.car.unattended = false
+      space.car.hasTicket = true
       if the.app.carLayer:contains( space.car.meter ) then
         the.app.carLayer:remove( space.car.meter )
       end
+      playSound("res/ticket.wav")
       the.app.score = the.app.score + 150
     end
   end

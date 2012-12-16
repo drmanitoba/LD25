@@ -24,7 +24,8 @@ Car = MovingTile:extend
   meter = nil,
   meterTime = math.random( 10, 20 ),
   unattendedTime = math.random( 10 ),
-  flashPromise = nil
+  flashPromise = nil,
+  hasTicket = false
 }
 
 function Car:onNew()
@@ -163,6 +164,11 @@ end
 
 function Car:driveOff()
   the.view.timer:stop( bind( self, "flashMeter" ) )
+
+  if not self.hasTicket then
+    playSound("res/strike.wav")
+  end
+
   if the.app.carLayer:contains( self.meter ) then
     the.app.carLayer:remove( self.meter )
   end

@@ -4,6 +4,6 @@ Score = Text:extend
   width = 300,
   height = 20,
   onUpdate = function (self)
-    self.text = 'Score: ' .. the.app.score
+    self.text = 'FINES: $' .. the.app.score
   end
 }
