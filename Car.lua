@@ -1,5 +1,9 @@
 Car = MovingTile:extend
 {
+  image = "res/cars.png",
+  width = 54,
+  height = 108,
+  drivingDirection = DOWN
 }
 
 function Car:checkForParking( dir )
@@ -19,3 +23,12 @@ function Car:onUpdate()
   -- Else
   --   Keep driving in current direction
 end
+
+RedCar = Car:extend
+{
+}
+
+BlueCar = Car:extend
+{
+  imageOffset = { x = 55, y = 0 }
+}

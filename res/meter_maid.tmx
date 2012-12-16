@@ -12,6 +12,24 @@
    </properties>
   </tile>
  </tileset>
+ <tileset firstgid="12" name="Cars" tilewidth="54" tileheight="108" spacing="1">
+  <image source="cars.png" width="164" height="108"/>
+  <tile id="0">
+   <properties>
+    <property name="name" value="RedCar"/>
+   </properties>
+  </tile>
+  <tile id="1">
+   <properties>
+    <property name="name" value="BlueCar"/>
+   </properties>
+  </tile>
+  <tile id="2">
+   <properties>
+    <property name="name" value="GreenCar"/>
+   </properties>
+  </tile>
+ </tileset>
  <layer name="map" width="10" height="14">
   <data encoding="base64" compression="zlib">
    eJxjZGBgYAJiZiBmAWI2IOZC4oPkWIGYEcrmAGJOJHUwPrI6djzmsZNhHrHuY8djHrq9o/4lz78AIf0C5Q==
