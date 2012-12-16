@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="10" height="14" tilewidth="54" tileheight="54">
+ <tileset firstgid="1" name="Tiles" tilewidth="54" tileheight="54">
+  <image source="tiles.png" width="271" height="108"/>
+ </tileset>
+ <tileset firstgid="11" name="Player" tilewidth="54" tileheight="54">
+  <image source="maid.png" width="54" height="54"/>
+  <tile id="0">
+   <properties>
+    <property name="_the" value="player"/>
+    <property name="name" value="Player"/>
+   </properties>
+  </tile>
+ </tileset>
+ <layer name="map" width="10" height="14">
+  <data encoding="base64" compression="zlib">
+   eJxjZGBgYAJiZiBmAWI2IOZC4oPkWIGYEcrmAGJOJHUwPrI6djzmsZNhHrHuY8djHrq9o/4lz78AIf0C5Q==
+  </data>
+ </layer>
+ <objectgroup name="player" width="10" height="14">
+  <object gid="11" x="270" y="378"/>
+ </objectgroup>
+</map>

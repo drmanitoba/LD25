@@ -1,12 +1,16 @@
 Player = MovingTile:extend
 {
-  image = "res/player.png",
+  image = "res/maid.png",
   isMoving = false,
   targetX = 0,
   targetY = 0,
   moveX = 0,
   moveY = 0,
-  facing = UP
+  facing = UP,
+  rightRad = math.rad(0),
+  downRad = math.rad(90),
+  leftRad = math.rad(180),
+  upRad = math.rad(270)
 }
 
 function Player:onNew()
@@ -42,12 +46,16 @@ function Player:onUpdate( time )
   if self.isMoving then
     if self.facing == LEFT then
       self.x = math.max( 0, self.x - self.moveX )
+      self.rotation = self.leftRad
     elseif self.facing == RIGHT then
       self.x = math.min( the.app.width - self.width, self.x + self.moveX )
+      self.rotation = self.rightRad
     elseif self.facing == UP then
       self.y = math.max( 0, self.y - self.moveY )
+      self.rotation = self.upRad
     else
       self.y = math.min( the.app.height - self.height, self.y + self.moveY )
+      self.rotation = self.downRad
     end
   end
 end
