@@ -17,7 +17,13 @@ Car = MovingTile:extend
   parked = false,
   parking = false,
   parkingX = 0,
-  parkingY = 0
+  parkingY = 0,
+  parkingSpace = nil,
+  lookingForParking = true,
+  meter = nil,
+  meterTime = math.random( 10, 20 ),
+  unattendedTime = math.random( 10 ),
+  flashPromise = nil
 }
 
 function Car:onNew()
@@ -50,7 +56,7 @@ function Car:onUpdate()
     self:park()
     return nil
   else
-    if self:checkForParking() then
+    if self.lookingForParking and self:checkForParking() then
       return nil
     end
   end
@@ -63,6 +69,7 @@ function Car:setDrivingDirection( dir )
   local leftLanes = { 2, 3.5, 5 }
   local rightLanes = { 8, 9.5, 11 }
   self.drivingDirection = dir
+  self.lookingForParking = true
 
   if dir == DOWN then
     self.targetY = the.app.height
@@ -95,7 +102,6 @@ function Car:checkForParking()
   if self.x == lane then
     while numSpaces > 0 do
       if self:checkForParkingSpace( the.app.parkingSpaces[ numSpaces ] ) then
-        self.parkingCount = 0
         return true
       end
       numSpaces = numSpaces - 1
@@ -109,6 +115,8 @@ function Car:park()
   local halfX = self.drivingDirection == UP and self.x + ((self.parkingX - self.x) * 0.5) or self.x - ((self.x - self.parkingX) * 0.5)
   local speed = self.drivingDirection == UP and 0.25 or 0.09375
   
+  self.lookingForParking = false
+  
   --  TODO: Needs work; fine tune
   
   the.view.tween:start( self, 'x', halfX, speed )
@@ -116,13 +124,74 @@ function Car:park()
   the.view.tween:start( self, 'rotation', (self.drivingDirection == UP and self.upRot or self.downRot) + math.rad( 30 ), speed * 2 )
   :andThen(
     function()
-      the.view.tween:start( self, 'rotation', self.drivingDirection == UP and self.upRot or self.downRot, speed * 2 )
       the.view.tween:start( self, 'x', self.parkingX, speed )
+      the.view.tween:start( self, 'rotation', self.drivingDirection == UP and self.upRot or self.downRot, speed * 2 )
+      :andThen(
+        function()
+          self.meter = Fill:new{
+            fill = {0, 255, 0},
+            width = 20,
+            height = self.height,
+            x = self.x + (self.drivingDirection == UP and (self.width + 26) or -46),
+            y = self.y
+          }
+          the.app:add( self.meter )
+          
+          self:rerollTimes()
+          self:startMeter()
+        end
+      )
     end
   )
   
   self.parking = false
   self.parked = true
+end
+
+function Car:startMeter()
+  the.view.timer:after( self.meterTime, bind( self, "startWait" ) )
+  the.view.tween:start( self.meter, "fill", { 255, 0, 0 }, self.meterTime )
+end
+
+function Car:startWait()
+  the.view.timer:after( self.unattendedTime, bind( self, "driveOff" ) )
+  self.flashPromise = the.view.timer:every( 0.1, bind( self, "flashMeter" ) )
+end
+
+function Car:driveOff()
+  the.view.timer:stop( bind( self, "flashMeter" ) )
+  the.app:remove( self.meter )
+  
+  local targX = self.drivingDirection == UP and self.rightLane or self.leftLane
+  local halfX = self.drivingDirection == UP and math.floor((self.rightParkingX - targX) * 0.5) or math.floor((targX - self.leftParkingX) * 0.5)
+  local halfH = math.floor( self.height * 0.5 )
+  local speed = self.drivingDirection == UP and 0.25 or 0.09375
+  
+  the.view.tween:start( self, 'x', self.x + (self.drivingDirection == UP and -halfX or halfX), speed )
+  the.view.tween:start( self, 'rotation', (self.drivingDirection == UP and self.upRot or self.downRot) - math.rad( 30 ), speed * 2 )
+  :andThen(
+    function()
+      the.view.tween:start( self, 'y', self.parkingY + (self.drivingDirection == UP and -halfH or halfH), speed )
+      the.view.tween:start( self, 'x', self.drivingDirection == UP and self.rightLane or self.leftLane, speed )
+      the.view.tween:start( self, 'rotation', self.drivingDirection == UP and self.upRot or self.downRot, speed * 2 )
+      :andThen(
+        function()
+          self.parked = false
+          self.parking = false
+          self.parkingSpace[ "occupied" ] = false
+        end
+      )
+    end
+  )
+end
+
+function Car:flashMeter()
+  self.meter.fill = self.meter.fill[2] == 255 and {255,0,0} or {255,255,0}
+end
+
+function Car:rerollTimes()
+  self.meterTime = math.random( 10, 20 )
+  self.unattendedTime = math.random( 10 )  
 end
 
 function Car:checkForParkingSpace( space )
@@ -139,6 +208,7 @@ function Car:checkForParkingSpace( space )
         self.parkingY = parkingY - halfH
         space[ "occupied" ] = true
         self.parking = true
+        self.parkingSpace = space
         return true
       end
     end
@@ -179,10 +249,6 @@ function Car:checkForCollisions()
           car.moveY = math.min( self.moveY, car.height / math.random( 10, 30 ) )
         end
       end
-
-      if math.abs(self.y - car.y) < self.height then
-        print( "still colliding" )
-      end
     end
 
     idx = idx - 1
@@ -192,6 +258,7 @@ function Car:checkForCollisions()
 end
 
 ---------------------------------------------------------------------------------
+
 RedCar = Car:extend
 {
 }
