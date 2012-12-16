@@ -139,7 +139,7 @@ function Car:park()
             x = self.x + (self.drivingDirection == UP and (self.width + 26) or -46),
             y = self.y
           }
-          the.app:add( self.meter )
+          the.app.carLayer:add( self.meter )
           
           self:rerollTimes()
           self:startMeter()

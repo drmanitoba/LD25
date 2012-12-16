@@ -28,7 +28,8 @@ the.app = App:new
   fps = 30,
   cars = nil,
   parkingSpaces = nil,
-  carLayer = nil
+  carLayer = nil,
+  playerLayer = nil
 }
 
 function the.app:onRun()
@@ -94,6 +95,11 @@ function the.app:onRun()
 
   self.carLayer = Group:new()
   self:add( self.carLayer )
+  
+  self.playerLayer = Group:new()
+  self:add( self.playerLayer )
+  self.view.player:remove( the.player )
+  self.playerLayer:add( the.player )
 
   self.cars = {}
   self:addCar( "red", DOWN )
