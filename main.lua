@@ -39,49 +39,57 @@ function the.app:onRun()
     ["occupied"] = false,
     ["x"] = 54,
     ["y"] = math.round(54 * 0.5),
-    ["height"] = 158
+    ["height"] = 158,
+    ["car"] = nil
   }
   self.parkingSpaces[2] = {
     ["occupied"] = false,
     ["x"] = 54,
     ["y"] = math.round(54 * 3.5),
-    ["height"] = 158
+    ["height"] = 158,
+    ["car"] = nil
   }
   self.parkingSpaces[3] = {
     ["occupied"] = false,
     ["x"] = 54,
     ["y"] = math.round(54 * 6.5),
-    ["height"] = 158
+    ["height"] = 158,
+    ["car"] = nil
   }
   self.parkingSpaces[4] = {
     ["occupied"] = false,
     ["x"] = 54,
     ["y"] = math.round(54 * 9.5),
-    ["height"] = 158
+    ["height"] = 158,
+    ["car"] = nil
   }
   self.parkingSpaces[5] = {
     ["occupied"] = false,
     ["x"] = 54 * 12,
     ["y"] = math.round(54 * 9.5),
-    ["height"] = 158
+    ["height"] = 158,
+    ["car"] = nil
   }
   self.parkingSpaces[6] = {
     ["occupied"] = false,
     ["x"] = 54 * 12,
     ["y"] = math.round(54 * 6.5),
-    ["height"] = 158
+    ["height"] = 158,
+    ["car"] = nil
   }
   self.parkingSpaces[7] = {
     ["occupied"] = false,
     ["x"] = 54 * 12,
     ["y"] = math.round(54 * 3.5),
-    ["height"] = 158
+    ["height"] = 158,
+    ["car"] = nil
   }
   self.parkingSpaces[8] = {
     ["occupied"] = false,
     ["x"] = 54 * 12,
     ["y"] = math.round(54 * 0.5),
-    ["height"] = 158
+    ["height"] = 158,
+    ["car"] = nil
   }
 
   self.carLayer = Group:new()

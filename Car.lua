@@ -16,6 +16,7 @@ Car = MovingTile:extend
   leftParkingX = 54,
   parked = false,
   parking = false,
+  unattended = false,
   parkingX = 0,
   parkingY = 0,
   parkingSpace = nil,
@@ -157,6 +158,8 @@ function Car:startMeter()
 end
 
 function Car:startWait()
+  self.unattended = true
+  
   the.view.timer:after( self.unattendedTime, bind( self, "driveOff" ) )
   self.flashPromise = the.view.timer:every( 0.1, bind( self, "flashMeter" ) )
 end
@@ -182,6 +185,8 @@ function Car:driveOff()
           self.parked = false
           self.parking = false
           self.parkingSpace[ "occupied" ] = false
+          self.parkingSpace[ "car" ] = nil
+          self.parkingSpace = nil
         end
       )
     end
@@ -210,6 +215,7 @@ function Car:checkForParkingSpace( space )
         self.parkingX = space[ "x" ]
         self.parkingY = parkingY - halfH
         space[ "occupied" ] = true
+        space[ "car" ] = self
         self.parking = true
         self.parkingSpace = space
         return true
