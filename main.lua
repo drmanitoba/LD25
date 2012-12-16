@@ -136,6 +136,7 @@ function the.app:onUpdate( time )
       space = self:getParkingSpace( LEFT, the.player.y )
     end
 
+
     if space and space.occupied and space.car.parked and space.car.unattended then
       space.car.unattended = false
       the.app.carLayer:remove( space.car.meter )
@@ -154,8 +155,8 @@ function the.app:getParkingSpace( dir, playerY )
   while idex > 0 do
     space = self.parkingSpaces[ idex ]
 
-    if not space.car then break end
-    if side == space.x and ( playerY > space.car.y and playerY < space.car.y + space.car.height ) then
+    if not space.car then return end
+    if side == space.x and ( playerY >= space.car.y and playerY < space.car.y + space.car.height ) then
       return space
     end
 
