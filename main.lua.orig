@@ -30,8 +30,11 @@ the.app = App:new
   cars = nil,
   parkingSpaces = nil,
   carLayer = nil,
-  playerLayer = nil,
+<<<<<<< HEAD
   score = 0
+=======
+  playerLayer = nil
+>>>>>>> master
 }
 
 function the.app:onRun()
