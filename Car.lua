@@ -166,7 +166,7 @@ end
 
 function Car:driveOff()
   the.view.timer:stop( bind( self, "flashMeter" ) )
-  the.app:remove( self.meter )
+  the.app.carLayer:remove( self.meter )
   
   local targX = self.drivingDirection == UP and self.rightLane or self.leftLane
   local halfX = self.drivingDirection == UP and math.floor((self.rightParkingX - targX) * 0.5) or math.floor((targX - self.leftParkingX) * 0.5)
