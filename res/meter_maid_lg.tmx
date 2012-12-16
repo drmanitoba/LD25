@@ -1,18 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" orientation="orthogonal" width="14" height="16" tilewidth="54" tileheight="54">
- <tileset firstgid="1" name="Tiles" tilewidth="54" tileheight="54">
-  <image source="tiles.png" width="271" height="108"/>
- </tileset>
- <tileset firstgid="11" name="Player" tilewidth="54" tileheight="54">
-  <image source="maid.png" width="54" height="54"/>
-  <tile id="0">
-   <properties>
-    <property name="_the" value="player"/>
-    <property name="name" value="Player"/>
-   </properties>
-  </tile>
- </tileset>
- <tileset firstgid="12" name="Cars" tilewidth="54" tileheight="108" spacing="1">
+ <tileset firstgid="1" name="Cars" tilewidth="54" tileheight="108" spacing="1">
   <image source="cars.png" width="164" height="108"/>
   <tile id="0">
    <properties>
@@ -30,12 +18,24 @@
    </properties>
   </tile>
  </tileset>
+ <tileset firstgid="4" name="Tiles" tilewidth="54" tileheight="54">
+  <image source="tiles.png" width="378" height="108"/>
+ </tileset>
+ <tileset firstgid="18" name="Player" tilewidth="54" tileheight="54">
+  <image source="maid.png" width="54" height="54"/>
+  <tile id="0">
+   <properties>
+    <property name="_the" value="player"/>
+    <property name="name" value="Player"/>
+   </properties>
+  </tile>
+ </tileset>
  <layer name="map" width="14" height="16">
   <data encoding="base64" compression="zlib">
-   eJxjZGBgYAdiZiBmQaLZgJgLizhILSsQMwIxExBzADEnEg3Thy7OhKaPWPuQ9bGTYB+6O8mxj1z/jYbnaHgSG54AZDAE3Q==
+   eJxjZWBgYANiXiBmB2IOKJsTiAWwiIPUcgExK5QPwnxAzI9FH7I4CLOg6SPGPpg+biR3EmMfNneSYh+5/kN252h4joYnvvAE6QMA5cAJqQ==
   </data>
  </layer>
  <objectgroup name="player" width="14" height="16">
-  <object gid="11" x="378" y="432"/>
+  <object gid="18" x="378" y="432"/>
  </objectgroup>
 </map>
