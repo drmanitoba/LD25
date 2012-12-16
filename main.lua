@@ -33,7 +33,7 @@ the.app = App:new
 
 function the.app:onRun()
   self.view = MapView:new()
-  
+
   self.parkingSpaces = {}
   self.parkingSpaces[1] = {
     ["occupied"] = false,
@@ -83,10 +83,10 @@ function the.app:onRun()
     ["y"] = math.round(54 * 0.5),
     ["height"] = 158
   }
-  
+
   self.carLayer = Group:new()
   self:add( self.carLayer )
-  
+
   self.cars = {}
   self:addCar( "red", DOWN )
   self:addCar( "blue", DOWN )
@@ -107,7 +107,6 @@ end
 
 function the.app:onUpdate( time )
   --  For each car, handle check to see if parking is available
-  
 end
 
 function the.app:onEndFrame()
@@ -117,7 +116,7 @@ function the.app:addCar( type, direction )
   local car = nil
   local dir = direction and direction or math.random()>0.5 and DOWN or UP
   local idx = math.max( table.getn(self.cars)+1, 1 )
-  
+
   if type == "red" then
     car = RedCar:new{drivingDirection = dir}
   elseif type == "blue" then
@@ -125,7 +124,7 @@ function the.app:addCar( type, direction )
   else
     car = GreenCar:new{drivingDirection = dir}
   end
-  
+
   self.cars[ idx ] = car
   self.carLayer:add( car )
 end

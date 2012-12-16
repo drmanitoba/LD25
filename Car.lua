@@ -23,7 +23,7 @@ end
 
 function Car:onUpdate()
   if self.parked then return end
-  
+
   if self.drivingDirection == DOWN then
     if self.y >= self.targetY then
       self:setDrivingDirection( UP )
@@ -33,34 +33,28 @@ function Car:onUpdate()
       self:setDrivingDirection( DOWN )
     end
   end
-  
+
   --  Collision testing
   self:checkForCollisions()
-  
-  --  Parking testing
-  if self:checkForParking() then return nil end
-  
+
   self.x = self.x + self.moveX
   self.y = self.y + self.moveY
-  -- Determine direction and checkForParking
-  -- If it can park
-  --   Park
-  -- If it has run over the player
-  --   Report collision and call insurance company
-  -- Else
-  --   Keep driving in current direction
+
+  --  Parking testing
+  if self:checkForParking() then return nil end
+
 end
 
 function Car:setDrivingDirection( dir )
   self.drivingDirection = dir
-  
+
   if dir == DOWN then
     self.targetY = the.app.height
     self.moveY = self:randomizeMoveY( false )
     self.x = 54 * math.random( 2, 5 )
     self.y = -self.height
     self.rotation = self.downRot
-    
+
   else
     self.targetY = -self.height
     self.moveY = self:randomizeMoveY( true )
@@ -72,30 +66,30 @@ end
 
 function Car:randomizeMoveY( negative )
   local my = self.height / math.random( 10, 30 )
-  
+
   return negative and -my or my
 end
 
 function Car:checkForParking()
   local numSpaces = table.getn( the.app.parkingSpaces )
   local lane = self.drivingDirection == UP and self.rightLane or self.leftLane
-  
+
   if self.x == lane then
     while numSpaces > 0 do
       if self:checkForParkingSpace( the.app.parkingSpaces[ numSpaces ] ) then
         return true
       end
       numSpaces = numSpaces - 1
-    end 
+    end
   end
-  
+
   return false
 end
 
 function Car:checkForParkingSpace( space )
   local parkingX = self.drivingDirection == UP and self.rightParkingX or self.leftParkingX
   local parkingY = self.drivingDirection == UP and space[ "y" ] or (space[ "y" ] + space[ "height" ])
-  
+
   if space[ "x" ] == parkingX then
     if math.abs( parkingY - self.y ) < space[ "height" ] then
       if not space[ "occupied" ] then
@@ -107,25 +101,27 @@ function Car:checkForParkingSpace( space )
       end
     end
   end
-  
+
   return false
 end
 
 function Car:checkForCollisions()
   local idx = table.getn( the.app.cars )
   local car = nil
-  
+
   while idx > 0 do
     car = the.app.cars[ idx ]
-    
+
     if car == self then
       break
     end
+
     if car.parked then
       break
     end
-    
-    if self:collide( car ) then
+
+    if self:collide( car ) or
+      car:collide( self ) then
       if self.drivingDirection == UP then
         if car.y < self.y then
           self.y = car.y + car.height
@@ -142,17 +138,22 @@ function Car:checkForCollisions()
           car.y = self.y - self.height
           car.moveY = math.min( self.moveY, car.height / math.random( 10, 30 ) )
         end
+
+        return true
       end
-      
+
       if math.abs(self.y - car.y) < self.height then
         print( "still colliding" )
       end
     end
-    
+
     idx = idx - 1
   end
+
+  return false
 end
 
+---------------------------------------------------------------------------------
 RedCar = Car:extend
 {
 }
