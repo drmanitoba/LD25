@@ -26,16 +26,73 @@ end
 the.app = App:new
 {
   fps = 30,
-  cars = nil
+  cars = nil,
+  parkingSpaces = nil
 }
 
 function the.app:onRun()
   self.view = MapView:new()
   
+  self.parkingSpaces = {}
+  self.parkingSpaces[1] = {
+    ["occupied"] = false,
+    ["x"] = 54,
+    ["y"] = math.round(54 * 0.5),
+    ["height"] = 158
+  }
+  self.parkingSpaces[2] = {
+    ["occupied"] = false,
+    ["x"] = 54,
+    ["y"] = math.round(54 * 3.5),
+    ["height"] = 158
+  }
+  self.parkingSpaces[3] = {
+    ["occupied"] = false,
+    ["x"] = 54,
+    ["y"] = math.round(54 * 6.5),
+    ["height"] = 158
+  }
+  self.parkingSpaces[4] = {
+    ["occupied"] = false,
+    ["x"] = 54,
+    ["y"] = math.round(54 * 9.5),
+    ["height"] = 158
+  }
+  self.parkingSpaces[5] = {
+    ["occupied"] = false,
+    ["x"] = 54 * 12,
+    ["y"] = math.round(54 * 9.5),
+    ["height"] = 158
+  }
+  self.parkingSpaces[6] = {
+    ["occupied"] = false,
+    ["x"] = 54 * 12,
+    ["y"] = math.round(54 * 6.5),
+    ["height"] = 158
+  }
+  self.parkingSpaces[7] = {
+    ["occupied"] = false,
+    ["x"] = 54 * 12,
+    ["y"] = math.round(54 * 3.5),
+    ["height"] = 158
+  }
+  self.parkingSpaces[8] = {
+    ["occupied"] = false,
+    ["x"] = 54 * 12,
+    ["y"] = math.round(54 * 0.5),
+    ["height"] = 158
+  }
+  
   self.cars = {}
   self:addCar( "red", DOWN )
   self:addCar( "blue", DOWN )
   self:addCar( "green", DOWN )
+  self:addCar( "red", DOWN )
+  self:addCar( "blue", DOWN )
+  self:addCar( "green", DOWN )
+  self:addCar( "red", UP )
+  self:addCar( "blue", UP )
+  self:addCar( "green", UP )
   self:addCar( "red", UP )
   self:addCar( "blue", UP )
   self:addCar( "green", UP )

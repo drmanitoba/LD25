@@ -9,7 +9,12 @@ Car = MovingTile:extend
   moveX = 0,
   moveY = 0,
   upRot = math.rad( 180 ),
-  downRot = math.rad( 0 )
+  downRot = math.rad( 0 ),
+  rightLane = 54 * 11,
+  rightParkingX = 54 * 12,
+  leftLane = 54 * 2,
+  leftParkingX = 54,
+  parked = false
 }
 
 function Car:onNew()
@@ -17,6 +22,8 @@ function Car:onNew()
 end
 
 function Car:onUpdate()
+  if self.parked then return end
+  
   if self.drivingDirection == DOWN then
     if self.y >= self.targetY then
       self:setDrivingDirection( UP )
@@ -30,6 +37,7 @@ function Car:onUpdate()
   --  Collision testing
   
   --  Parking testing
+  if self:checkForParking() then return end
   
   self.x = self.x + self.moveX
   self.y = self.y + self.moveY
@@ -67,12 +75,44 @@ function Car:randomizeMoveY( negative )
   return negative and -my or my
 end
 
-function Car:checkForParking( dir )
-  if dir == UP then
-    --  Check for parking one tile up, one or two tiles to the right
-  elseif dir == DOWN then
-    --  Check for parking one tile down, one or two tile to the left
+function Car:checkForParking()
+  local numSpaces = table.getn( the.app.parkingSpaces )
+  
+  if self.drivingDirection == UP then
+    if self.x == self.rightLane then
+      while numSpaces > 0 do
+        if self:checkForParkingSpace( the.app.parkingSpaces[ numSpaces ] ) then return true end
+        numSpaces = numSpaces - 1
+      end 
+    end
+  else
+    if self.x == self.leftLane then
+      while numSpaces > 0 do
+        if self:checkForParkingSpace( the.app.parkingSpaces[ numSpaces ] ) then return true end
+        numSpaces = numSpaces - 1
+      end 
+    end
   end
+  
+  return false
+end
+
+function Car:checkForParkingSpace( space )
+  local parkingX = self.drivingDirection == UP and self.rightParkingX or self.leftParkingX
+  
+  if space[ "x" ] == parkingX then
+    if math.abs( space[ "y" ] - self.y ) < space[ "height" ] then
+      if not space[ "occupied" ] then
+        self.x = space[ "x" ]
+        self.y = (space[ "y" ] + math.floor( space[ "height" ] * 0.5 )) - math.floor( self.height * 0.5 )
+        space[ "occupied" ] = true
+        self.parked = true
+        return true
+      end
+    end
+  end
+  
+  return false
 end
 
 RedCar = Car:extend
