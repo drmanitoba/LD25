@@ -32,3 +32,8 @@ BlueCar = Car:extend
 {
   imageOffset = { x = 55, y = 0 }
 }
+
+GreenCar = Car:extend
+{
+  imageOffset = { x = 110, y = 0 }
+}
