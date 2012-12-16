@@ -137,8 +137,8 @@ function the.app:onUpdate( time )
     end
 
     if space and space.occupied and space.car.parked and space.car.unattended then
-      print("TICKET!")
       space.car.unattended = false
+      the.app.carLayer:remove( space.car.meter )
       the.app.score = the.app.score + 150
     end
   end
