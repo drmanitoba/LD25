@@ -57,29 +57,26 @@ function Car:onUpdate()
   
   self.x = self.x + self.moveX
   self.y = self.y + self.moveY
-  -- Determine direction and checkForParking
-  -- If it can park
-  --   Park
-  -- If it has run over the player
-  --   Report collision and call insurance company
-  -- Else
-  --   Keep driving in current direction
 end
 
 function Car:setDrivingDirection( dir )
+  local leftLanes = { 2, 3.5, 5 }
+  local rightLanes = { 8, 9.5, 11 }
   self.drivingDirection = dir
 
   if dir == DOWN then
     self.targetY = the.app.height
     self.moveY = self:randomizeMoveY( false )
-    self.x = 54 * math.random( 2, 5 )
+    self.lane = leftLanes[math.random( table.getn(leftLanes) )]
+    self.x = 54 * self.lane
     self.y = -self.height
     self.rotation = self.downRot
 
   else
     self.targetY = -self.height
     self.moveY = self:randomizeMoveY( true )
-    self.x = 54 * math.random( 8, 11 )
+    self.lane = rightLanes[math.random( table.getn(rightLanes) )]
+    self.x = 54 * self.lane
     self.y = the.app.height
     self.rotation = self.upRot
   end
@@ -164,8 +161,7 @@ function Car:checkForCollisions()
       break
     end
 
-    if self:collide( car ) or
-      car:collide( self ) then
+    if self:collide( car ) then
       if self.drivingDirection == UP then
         if car.y < self.y then
           self.y = car.y + car.height
@@ -174,7 +170,7 @@ function Car:checkForCollisions()
           car.y = self.y + self.height
           car.moveY = math.min( self.moveY, car.height / math.random( 10, 30 ) )
         end
-      else
+      elseif self.drivingDirection == DOWN then
         if car.y > self.y then
           self.y = car.y - car.height
           self.moveY = math.min( car.moveY, self.height / math.random( 10, 30 ) )
@@ -182,8 +178,6 @@ function Car:checkForCollisions()
           car.y = self.y - self.height
           car.moveY = math.min( self.moveY, car.height / math.random( 10, 30 ) )
         end
-
-        return true
       end
 
       if math.abs(self.y - car.y) < self.height then

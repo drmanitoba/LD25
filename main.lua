@@ -5,6 +5,7 @@ require 'MovingTile'
 require 'Car'
 require 'Player'
 require 'MapView'
+require 'Score'
 
 ---------------------------------------------------------------------------------------------------------
 
@@ -28,11 +29,13 @@ the.app = App:new
   fps = 30,
   cars = nil,
   parkingSpaces = nil,
-  carLayer = nil
+  carLayer = nil,
+  score = 0
 }
 
 function the.app:onRun()
   self.view = MapView:new()
+  self.hud = Score:new{ x = 10, y = 10 }
 
   self.parkingSpaces = {}
   self.parkingSpaces[1] = {
@@ -100,13 +103,57 @@ function the.app:onRun()
   self:addCar( "red", UP )
   self:addCar( "blue", UP )
   self:addCar( "green", UP )
+
+  self:add( self.hud )
 end
 
 function the.app:onStartFrame()
 end
 
 function the.app:onUpdate( time )
-  --  For each car, handle check to see if parking is available
+    if the.keys:pressed('return') then
+      local nextX
+
+      -- Check if player x is 0 or 54*13
+      --   If 0
+      --     Player is on left
+      --     Get parking space to right
+      --       Can be done by knowing Y ranges (e.g. 26-184, etc [reference parking tables above])
+      --     If parking space is occupied
+      --       If car in parking space is parked
+      --         If timer is up
+      --           Ticket!
+      --   If 54*13
+      --     Player is on right
+      --     Get parking space to left
+      --       Use Y ranges, they're the same on both sides
+      --     If parking space is occupied
+      --       If car in parking space is parked
+      --         If timer is up
+      --           Ticket!
+
+      if the.player.facing == LEFT then
+        nextX = 54
+      elseif the.player.facing == RIGHT then
+        nextX = 54 * 12
+      else
+        return
+      end
+
+      local sp_idex = table.getn(self.parkingSpaces)
+
+      while sp_idex > 0 do
+        local space = self.parkingSpaces[sp_idex]
+
+        print("space.x: " .. space.x .. ", nextX: " .. nextX)
+        print("occupied: " .. tostring(space.occupied))
+        if math.floor(space.x) == math.floor(nextX) and space.occupied then
+          print("ticket")
+        end
+
+        sp_idex = sp_idex - 1
+      end
+    end
 end
 
 function the.app:onEndFrame()

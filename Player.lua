@@ -46,7 +46,7 @@ function Player:onUpdate( time )
     self.changingPositionCounter = self.changingPositionCounter - 1
     return
   end
-  
+
   if self:distance( self.targetX, self.targetY ) <= NEARLY_ZERO then
     if the.keys:pressed('a','left') then
       self.targetX = math.max( 0, self.x - self.width )
