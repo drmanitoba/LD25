@@ -14,7 +14,10 @@ Car = MovingTile:extend
   rightParkingX = 54 * 12,
   leftLane = 54 * 2,
   leftParkingX = 54,
-  parked = false
+  parked = false,
+  parking = false,
+  parkingX = 0,
+  parkingY = 0
 }
 
 function Car:onNew()
@@ -22,8 +25,10 @@ function Car:onNew()
 end
 
 function Car:onUpdate()
-  if self.parked then return end
-
+  if self.parked then
+    return nil
+  end
+  
   if self.drivingDirection == DOWN then
     if self.y >= self.targetY then
       self:setDrivingDirection( UP )
@@ -41,8 +46,24 @@ function Car:onUpdate()
   self.y = self.y + self.moveY
 
   --  Parking testing
-  if self:checkForParking() then return nil end
-
+  if self.parking then
+    self:park()
+    return nil
+  else
+    if self:checkForParking() then
+      return nil
+    end
+  end
+  
+  self.x = self.x + self.moveX
+  self.y = self.y + self.moveY
+  -- Determine direction and checkForParking
+  -- If it can park
+  --   Park
+  -- If it has run over the player
+  --   Report collision and call insurance company
+  -- Else
+  --   Keep driving in current direction
 end
 
 function Car:setDrivingDirection( dir )
@@ -77,6 +98,7 @@ function Car:checkForParking()
   if self.x == lane then
     while numSpaces > 0 do
       if self:checkForParkingSpace( the.app.parkingSpaces[ numSpaces ] ) then
+        self.parkingCount = 0
         return true
       end
       numSpaces = numSpaces - 1
@@ -86,17 +108,40 @@ function Car:checkForParking()
   return false
 end
 
-function Car:checkForParkingSpace( space )
-  local parkingX = self.drivingDirection == UP and self.rightParkingX or self.leftParkingX
-  local parkingY = self.drivingDirection == UP and space[ "y" ] or (space[ "y" ] + space[ "height" ])
+function Car:park()
+  local halfX = self.drivingDirection == UP and self.x + ((self.parkingX - self.x) * 0.5) or self.x - ((self.x - self.parkingX) * 0.5)
+  local speed = self.drivingDirection == UP and 0.25 or 0.09375
+  
+  --  TODO: Needs work; fine tune
+  
+  the.view.tween:start( self, 'x', halfX, speed )
+  the.view.tween:start( self, 'y', self.parkingY, speed )
+  the.view.tween:start( self, 'rotation', (self.drivingDirection == UP and self.upRot or self.downRot) + math.rad( 30 ), speed * 2 )
+  :andThen(
+    function()
+      the.view.tween:start( self, 'rotation', self.drivingDirection == UP and self.upRot or self.downRot, speed * 2 )
+      the.view.tween:start( self, 'x', self.parkingX, speed )
+    end
+  )
+  
+  self.parking = false
+  self.parked = true
+end
 
+function Car:checkForParkingSpace( space )
+  local halfSpaceH = math.floor( space[ "height" ] * 0.5 )
+  local halfH = math.floor( self.height * 0.5 )
+  local parkingX = self.drivingDirection == UP and self.rightParkingX or self.leftParkingX
+  local parkingY = space[ "y" ] + halfSpaceH
+  local yDist = self.drivingDirection == UP and self.y - parkingY or parkingY - self.y
+  
   if space[ "x" ] == parkingX then
-    if math.abs( parkingY - self.y ) < space[ "height" ] then
+    if yDist < self.height then
       if not space[ "occupied" ] then
-        self.x = space[ "x" ]
-        self.y = (space[ "y" ] + math.floor( space[ "height" ] * 0.5 )) - math.floor( self.height * 0.5 )
+        self.parkingX = space[ "x" ]
+        self.parkingY = parkingY - halfH
         space[ "occupied" ] = true
-        self.parked = true
+        self.parking = true
         return true
       end
     end
@@ -115,8 +160,7 @@ function Car:checkForCollisions()
     if car == self then
       break
     end
-
-    if car.parked then
+    if car.parked or car.parking then
       break
     end
 
