@@ -167,7 +167,7 @@ function the.app:onUpdate( time )
       if math.floor( px + the.player.width ) >= cx and px <= math.floor( cx + car.width ) then
         if car.drivingDirection == UP then
           if py <= cb then
-            if py <= cf then
+            if py >= math.floor( cf + (car.height * 0.25) ) and py <= cf then
               print( "Up Front" )
               --  Front
               the.player:die()
