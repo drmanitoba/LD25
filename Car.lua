@@ -78,21 +78,15 @@ end
 
 function Car:checkForParking()
   local numSpaces = table.getn( the.app.parkingSpaces )
+  local lane = self.drivingDirection == UP and self.rightLane or self.leftLane
   
-  if self.drivingDirection == UP then
-    if self.x == self.rightLane then
-      while numSpaces > 0 do
-        if self:checkForParkingSpace( the.app.parkingSpaces[ numSpaces ] ) then return true end
-        numSpaces = numSpaces - 1
-      end 
-    end
-  else
-    if self.x == self.leftLane then
-      while numSpaces > 0 do
-        if self:checkForParkingSpace( the.app.parkingSpaces[ numSpaces ] ) then return true end
-        numSpaces = numSpaces - 1
-      end 
-    end
+  if self.x == lane then
+    while numSpaces > 0 do
+      if self:checkForParkingSpace( the.app.parkingSpaces[ numSpaces ] ) then
+        return true
+      end
+      numSpaces = numSpaces - 1
+    end 
   end
   
   return false
@@ -100,9 +94,10 @@ end
 
 function Car:checkForParkingSpace( space )
   local parkingX = self.drivingDirection == UP and self.rightParkingX or self.leftParkingX
+  local parkingY = self.drivingDirection == UP and space[ "y" ] or (space[ "y" ] + space[ "height" ])
   
   if space[ "x" ] == parkingX then
-    if math.abs( space[ "y" ] - self.y ) < space[ "height" ] then
+    if math.abs( parkingY - self.y ) < space[ "height" ] then
       if not space[ "occupied" ] then
         self.x = space[ "x" ]
         self.y = (space[ "y" ] + math.floor( space[ "height" ] * 0.5 )) - math.floor( self.height * 0.5 )
