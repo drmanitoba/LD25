@@ -119,52 +119,41 @@ function the.app:onStartFrame()
 end
 
 function the.app:onUpdate( time )
-    if the.keys:pressed('return') then
-      local nextX
+  if the.keys:pressed('return') then
+    local space
+    local playerx = math.floor(the.player.x)
 
-      -- Check if player x is 0 or 54*13
-      --   If 0
-      --     Player is on left
-      --     Get parking space to right
-      --       Can be done by knowing Y ranges (e.g. 26-184, etc [reference parking tables above])
-      --     If parking space is occupied
-      --       If car in parking space is parked
-      --         If timer is up
-      --           Ticket!
-      --   If 54*13
-      --     Player is on right
-      --     Get parking space to left
-      --       Use Y ranges, they're the same on both sides
-      --     If parking space is occupied
-      --       If car in parking space is parked
-      --         If timer is up
-      --           Ticket!
-
-      if the.player.facing == LEFT then
-        nextX = 54
-      elseif the.player.facing == RIGHT then
-        nextX = 54 * 12
-      else
-        return
-      end
-
-      local sp_idex = table.getn(self.parkingSpaces)
-
-      while sp_idex > 0 do
-        local space = self.parkingSpaces[sp_idex]
-
-        print("space.x: " .. space.x .. ", nextX: " .. nextX)
-        print("occupied: " .. tostring(space.occupied))
-        if math.floor(space.x) == math.floor(nextX) and space.occupied then
-          print("ticket")
-        end
-
-        sp_idex = sp_idex - 1
-      end
+    -- Check if player x is 0 or 54*13
+    if playerx == math.floor((54 * 13) - 1) then
+      space = self:getParkingSpace( RIGHT, the.player.y )
+    elseif playerx == 0 then
+      space = self:getParkingSpace( LEFT, the.player.y )
     end
+
+    if space.occupied and space.car.parked and space.car.unattended then
+      print("TICKET!")
+    end
+  end
 end
 
 function the.app:onEndFrame()
+end
+
+function the.app:getParkingSpace( dir, playerY )
+  local idex = table.getn( self.parkingSpaces )
+  local side = dir == LEFT and 54 or 54 * 12
+
+  while idex > 0 do
+    space = self.parkingSpaces[ idex ]
+
+    if side == space.x and ( playerY > space.y and playerY < space.y + space.height ) then
+      return space
+    end
+
+    idex = idex - 1
+  end
+
+  return nil
 end
 
 function the.app:addCar( type, direction )
