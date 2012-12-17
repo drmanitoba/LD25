@@ -32,12 +32,14 @@ the.app = App:new
   parkingSpaces = nil,
   carLayer = nil,
   playerLayer = nil,
-  score = 0
+  score = 0,
+  gameMusic = nil
 }
 
 function the.app:onRun()
   self.view = MapView:new()
   self.hud = Score:new{ x = 10, y = 10 }
+  self.gameMusic = sound("res/main_music.mp3")
 
   self.parkingSpaces = {}
   self.parkingSpaces[1] = {
@@ -120,6 +122,9 @@ function the.app:onRun()
   self:addCar( "green", UP )
 
   self:add( self.hud )
+
+  self.gameMusic:setLooping(true)
+  self.gameMusic:play()
 end
 
 function the.app:onStartFrame()
