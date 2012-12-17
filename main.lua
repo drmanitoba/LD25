@@ -171,10 +171,8 @@ function the.app:gameUpdate( time )
 
     -- Check if player x is 0 or 54*13
     if playerx > math.floor(54 * 12) then
-      print("checking from the right")
       space = self:getParkingSpace( RIGHT, the.player.y )
     elseif playerx < 54 then
-      print("checking from the left")
       space = self:getParkingSpace( LEFT, the.player.y )
     end
 
