@@ -45,3 +45,19 @@ function MovingTile:distance( xval, yval )
   b = self.y - b
   return math.sqrt( a*a + b*b ) 
 end
+
+function MovingTile:roundXToGrid( x )
+  local gs = math.floor( the.app.width / the.app.view.gridSize ) - 1
+  local mx = math.floor( x / the.app.view.gridSize )
+  local rt = math.min( gs, mx )
+  rt = math.max( rt, 0 )
+  return math.floor( rt * the.app.view.gridSize )
+end
+
+function MovingTile:roundYToGrid( y )
+  local gs = math.floor( the.app.height / the.app.view.gridSize ) - 1
+  local my = math.floor( y / the.app.view.gridSize )
+  local rt = math.min( gs, my )
+  rt = math.max( rt, 0 )
+  return math.floor( rt * the.app.view.gridSize )
+end

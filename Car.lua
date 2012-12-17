@@ -11,9 +11,9 @@ Car = MovingTile:extend
   upRot = math.rad( 180 ),
   downRot = math.rad( 0 ),
   rightLane = 54 * 11,
-  rightParkingX = 54 * 12,
+  rightParkingX = math.floor( 54 * 12 ),
   leftLane = 54 * 2,
-  leftParkingX = 54,
+  leftParkingX = math.floor( 54 ),
   parked = false,
   parking = false,
   unattended = false,
@@ -126,11 +126,11 @@ function Car:park()
   --  TODO: Needs work; fine tune
   
   the.view.tween:start( self, 'x', halfX, speed )
-  the.view.tween:start( self, 'y', self.parkingY, speed )
+  the.view.tween:start( self, 'y', self:roundYToGrid( self.parkingY ), speed )
   the.view.tween:start( self, 'rotation', (self.drivingDirection == UP and self.upRot or self.downRot) + math.rad( 30 ), speed * 2 )
   :andThen(
     function()
-      the.view.tween:start( self, 'x', self.parkingX, speed )
+      the.view.tween:start( self, 'x', self:roundXToGrid( self.parkingX ), speed )
       the.view.tween:start( self, 'rotation', self.drivingDirection == UP and self.upRot or self.downRot, speed * 2 )
       :andThen(
         function()
@@ -189,8 +189,8 @@ function Car:driveOff()
   the.view.tween:start( self, 'rotation', (self.drivingDirection == UP and self.upRot or self.downRot) - math.rad( 30 ), speed * 2 )
   :andThen(
     function()
-      the.view.tween:start( self, 'y', self.parkingY + (self.drivingDirection == UP and -halfH or halfH), speed )
-      the.view.tween:start( self, 'x', self.drivingDirection == UP and self.rightLane or self.leftLane, speed )
+      the.view.tween:start( self, 'y', self:roundYToGrid( self.parkingY + (self.drivingDirection == UP and -halfH or halfH) ), speed )
+      the.view.tween:start( self, 'x', self:roundXToGrid( self.drivingDirection == UP and self.rightLane or self.leftLane ), speed )
       the.view.tween:start( self, 'rotation', self.drivingDirection == UP and self.upRot or self.downRot, speed * 2 )
       :andThen(
         function()
@@ -222,8 +222,8 @@ function Car:checkForParkingSpace( space )
   if space[ "x" ] == parkingX then
     if yDist < self.height then
       if not space[ "occupied" ] then
-        self.parkingX = space[ "x" ]
-        self.parkingY = parkingY - halfH
+        self.parkingX = self:roundXToGrid( space[ "x" ] )
+        self.parkingY = self:roundYToGrid( parkingY - halfH )
         space[ "occupied" ] = true
         space[ "car" ] = self
         self.parking = true

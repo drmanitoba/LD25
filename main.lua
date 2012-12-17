@@ -32,12 +32,14 @@ the.app = App:new
   parkingSpaces = nil,
   carLayer = nil,
   playerLayer = nil,
+  lastPlayerPos = nil,
   score = 0,
   gameMusic = nil
 }
 
 function the.app:onRun()
   self.view = MapView:new()
+  self.view.gridSize = 54
   self.hud = Score:new{ x = 10, y = 10 }
   self.gameMusic = sound("res/main_music.mp3")
 
@@ -45,56 +47,56 @@ function the.app:onRun()
   self.parkingSpaces[1] = {
     ["occupied"] = false,
     ["x"] = 54,
-    ["y"] = math.round(54 * 0.5),
+    ["y"] = math.floor(54),
     ["height"] = 158,
     ["car"] = nil
   }
   self.parkingSpaces[2] = {
     ["occupied"] = false,
     ["x"] = 54,
-    ["y"] = math.round(54 * 3.5),
+    ["y"] = math.floor(54 * 4),
     ["height"] = 158,
     ["car"] = nil
   }
   self.parkingSpaces[3] = {
     ["occupied"] = false,
     ["x"] = 54,
-    ["y"] = math.round(54 * 6.5),
+    ["y"] = math.floor(54 * 7),
     ["height"] = 158,
     ["car"] = nil
   }
   self.parkingSpaces[4] = {
     ["occupied"] = false,
     ["x"] = 54,
-    ["y"] = math.round(54 * 9.5),
+    ["y"] = math.floor(54 * 10),
     ["height"] = 158,
     ["car"] = nil
   }
   self.parkingSpaces[5] = {
     ["occupied"] = false,
     ["x"] = 54 * 12,
-    ["y"] = math.round(54 * 9.5),
+    ["y"] = math.floor(54 * 10),
     ["height"] = 158,
     ["car"] = nil
   }
   self.parkingSpaces[6] = {
     ["occupied"] = false,
     ["x"] = 54 * 12,
-    ["y"] = math.round(54 * 6.5),
+    ["y"] = math.floor(54 * 7),
     ["height"] = 158,
     ["car"] = nil
   }
   self.parkingSpaces[7] = {
     ["occupied"] = false,
     ["x"] = 54 * 12,
-    ["y"] = math.round(54 * 3.5),
+    ["y"] = math.floor(54 * 4),
     ["height"] = 158,
     ["car"] = nil
   }
   self.parkingSpaces[8] = {
     ["occupied"] = false,
     ["x"] = 54 * 12,
-    ["y"] = math.round(54 * 0.5),
+    ["y"] = math.floor(54),
     ["height"] = 158,
     ["car"] = nil
   }
@@ -156,67 +158,58 @@ function the.app:onUpdate( time )
     end
   end
   
-  local idx = table.getn( self.cars )
-  local car
-  local cx
-  local cy
-  local cf
-  local cb
-  local px = math.floor( the.player.x )
-  local py = math.floor( the.player.y )
-  while idx > 0 do
-    car = self.cars[idx]
-    cx = math.floor( car.x )
-    cy = math.floor( car.y )
-    cf = math.floor( (car.drivingDirection == UP and cy or cy + car.height) )
-    cb = math.floor( (car.drivingDirection == UP and cy + car.height or cy) )
-    if not car.parked and not car.parking and car:collide( the.player ) then
-      print( "player x: " .. px .. ", y: " .. py )
-      print( "car x: " .. cx .. ", y: " .. cy )
-      print( "car front: " .. cf )
-      if math.floor( px + the.player.width ) >= cx and px <= math.floor( cx + car.width ) then
-        if car.drivingDirection == UP then
-          if py <= cb then
-            if py >= math.floor( cf + (car.height * 0.25) ) and py <= cf then
-              print( "Up Front" )
-              --  Front
-              the.player:die()
-            else
-              print( "Up Side" )
-              --  Side
-              the.player.x = (px > cx and math.floor( cx + car.width + 1 ) or math.floor( cx - the.player.width - 1 ))
-              the.player.targetX = the.player.x
-            end
+  if self.lastPlayerPos then
+    local idx = table.getn( self.cars )
+    local car
+    local side
+    
+    while idx > 0 do
+      car = self.cars[ idx ]
+      
+      if car:collide( the.player ) then
+        --print( 'car x: ' .. car.x .. ', y: ' .. car.y )
+        --print( 'pla x: ' ..self.lastPlayerPos[1] .. ', y: ' .. self.lastPlayerPos[2] )
+        --print( 'car driving direction: ' .. car.drivingDirection )
+        
+        if self.lastPlayerPos[1] >= car:roundXToGrid( car.x ) and self.lastPlayerPos[1] <= car:roundXToGrid( car.x + the.app.view.gridSize ) then
+          if self.lastPlayerPos[2] <= car:roundYToGrid( car.y ) then
+            side = UP
+          elseif self.lastPlayerPos[2] >= car:roundYToGrid( car.y + ( the.app.view.gridSize * 2 ) ) then
+            side = DOWN
           else
-            print( "Up Back" )
-            --  Back
-            the.player.x = (px > cx and math.floor( cx + car.width + 1 ) or math.floor( cx - the.player.width - 1 ))
-            the.player.targetX = the.player.x
+            side = car.drivingDirection == UP and DOWN or UP
           end
         else
-          if py >= cb then
-            if py >= math.floor( cy + (car.height * 0.75)) and py <= cf then
-              print( "Down Front" )
-              --  Front
-              the.player:die()
-            else
-              print( "Down Side" )
-              --  Side
-              the.player.x = (px > cx and math.floor( cx + car.width + 1 ) or math.floor( cx - the.player.width - 1 ))
-              the.player.targetX = the.player.x
-            end
+          if self.lastPlayerPos[1] < car:roundXToGrid( car.x ) then
+            side = LEFT
           else
-            print( "Down Back" )
-            --  Back
-            the.player.x = (px > cx and math.floor( cx + car.width + 1 ) or math.floor( cx - the.player.width - 1 ))
-            the.player.targetX = the.player.x
+            side = RIGHT
           end
         end
+        
+        --print( 'side: ' .. side )
+        --print( 'parking? ' .. tostring( car.parking ) .. ' parked? ' .. tostring( car.parked ) )
+        
+        if car.parking or car.parked or car.drivingDirection ~= side then
+          if side == UP or side == DOWN then
+            the.player.y = self.lastPlayerPos[2]
+          else
+            the.player.x = self.lastPlayerPos[1]
+          end
+          
+          the.player.targetX = the.player.x
+          the.player.targetY = the.player.y
+        else
+          the.player:die()
+          the.app.view:flash( {255,0,0}, 0.05 )
+        end
       end
+      
+      idx = idx - 1
     end
-    
-    idx = idx - 1
   end
+  
+  self.lastPlayerPos = { math.floor( the.player.x ), math.floor( the.player.y ) }
 end
 
 function the.app:onEndFrame()
