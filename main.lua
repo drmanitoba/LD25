@@ -23,6 +23,21 @@ function math.round( val )
   end
 end
 
+function table.getIndex( t, v )
+  local idx = nil
+  local i = table.getn( t )
+  while i > 0 do
+    if t[i] == v then
+      idx = i
+      break
+    end
+    
+    i = i - 1
+  end
+  
+  return idx
+end
+
 ---------------------------------------------------------------------------------------------------------
 
 the.app = App:new

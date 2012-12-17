@@ -3,6 +3,7 @@ Car = MovingTile:extend
   image = "res/cars.png",
   width = 54,
   height = 108,
+  paint = '',
   drivingDirection = DOWN,
   targetX = 0,
   targetY = 0,
@@ -237,27 +238,28 @@ function Car:checkForParkingSpace( space )
 end
 
 function Car:checkForCollisions()
+  local sid = table.getIndex( the.app.cars, self )
   local idx = table.getn( the.app.cars )
   local car = nil
 
   while idx > 0 do
     car = the.app.cars[ idx ]
 
-    if car == self or car.parked or car.parking then
+    if ( sid and sid == idx ) then-- or car.parked or car.parking then
       break
     end
 
     if self:collide( car ) then
       if self.drivingDirection == UP then
-        if car.y < self.y then
+        if car.y <= self.y then
           self.y = car.y + car.height
           self.moveY = math.min( car.moveY, self.height / math.random( 10, 30 ) )
         else
           car.y = self.y + self.height
           car.moveY = math.min( self.moveY, car.height / math.random( 10, 30 ) )
         end
-      elseif self.drivingDirection == DOWN then
-        if car.y > self.y then
+      else
+        if car.y >= self.y then
           self.y = car.y - car.height
           self.moveY = math.min( car.moveY, self.height / math.random( 10, 30 ) )
         else
@@ -289,14 +291,17 @@ end
 
 RedCar = Car:extend
 {
+  paint = 'red'
 }
 
 BlueCar = Car:extend
 {
-  imageOffset = { x = 55, y = 0 }
+  imageOffset = { x = 55, y = 0 },
+  paint = 'blue'
 }
 
 GreenCar = Car:extend
 {
-  imageOffset = { x = 110, y = 0 }
+  imageOffset = { x = 110, y = 0 },
+  paint = 'green'
 }
