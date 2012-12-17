@@ -243,10 +243,7 @@ function Car:checkForCollisions()
   while idx > 0 do
     car = the.app.cars[ idx ]
 
-    if car == self then
-      break
-    end
-    if car.parked or car.parking then
+    if car == self or car.parked or car.parking then
       break
     end
 
