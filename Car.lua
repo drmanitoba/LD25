@@ -285,7 +285,7 @@ function Car:dingCar()
 end
 
 function Car:removeDing()
-  print("remove ding")
+  --print("remove ding")
   the.app.playerLayer:remove(self.ding)
 end
 

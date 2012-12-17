@@ -136,9 +136,11 @@ function the.app:onUpdate( time )
     local playerx = math.floor(the.player.x)
 
     -- Check if player x is 0 or 54*13
-    if playerx > math.floor(54 * 12) and playerx <= math.floor(54 * 13) then
+    if playerx > math.floor(54 * 12) then
+      print("checking from the right")
       space = self:getParkingSpace( RIGHT, the.player.y )
-    elseif playerx >= 0 and playerx < 54 then
+    elseif playerx < 54 then
+      print("checking from the left")
       space = self:getParkingSpace( LEFT, the.player.y )
     end
 
@@ -171,24 +173,24 @@ function the.app:onUpdate( time )
     cf = math.floor( (car.drivingDirection == UP and cy or cy + car.height) )
     cb = math.floor( (car.drivingDirection == UP and cy + car.height or cy) )
     if not car.parked and not car.parking and car:collide( the.player ) then
-      print( "player x: " .. px .. ", y: " .. py )
-      print( "car x: " .. cx .. ", y: " .. cy )
-      print( "car front: " .. cf )
+      --print( "player x: " .. px .. ", y: " .. py )
+      --print( "car x: " .. cx .. ", y: " .. cy )
+      --print( "car front: " .. cf )
       if math.floor( px + the.player.width ) >= cx and px <= math.floor( cx + car.width ) then
         if car.drivingDirection == UP then
           if py <= cb then
             if py >= math.floor( cf + (car.height * 0.25) ) and py <= cf then
-              print( "Up Front" )
+              --print( "Up Front" )
               --  Front
               the.player:die()
             else
-              print( "Up Side" )
+              --print( "Up Side" )
               --  Side
               the.player.x = (px > cx and math.floor( cx + car.width + 1 ) or math.floor( cx - the.player.width - 1 ))
               the.player.targetX = the.player.x
             end
           else
-            print( "Up Back" )
+            --print( "Up Back" )
             --  Back
             the.player.x = (px > cx and math.floor( cx + car.width + 1 ) or math.floor( cx - the.player.width - 1 ))
             the.player.targetX = the.player.x
@@ -196,17 +198,17 @@ function the.app:onUpdate( time )
         else
           if py >= cb then
             if py >= math.floor( cy + (car.height * 0.75)) and py <= cf then
-              print( "Down Front" )
+              --print( "Down Front" )
               --  Front
               the.player:die()
             else
-              print( "Down Side" )
+              --print( "Down Side" )
               --  Side
               the.player.x = (px > cx and math.floor( cx + car.width + 1 ) or math.floor( cx - the.player.width - 1 ))
               the.player.targetX = the.player.x
             end
           else
-            print( "Down Back" )
+            --print( "Down Back" )
             --  Back
             the.player.x = (px > cx and math.floor( cx + car.width + 1 ) or math.floor( cx - the.player.width - 1 ))
             the.player.targetX = the.player.x
@@ -224,27 +226,31 @@ end
 
 function the.app:getParkingSpace( dir, playerY )
   local idex = table.getn( self.parkingSpaces )
-  local side
-  local atX
+  local colX
+
+  if dir == LEFT then
+    colX = 54
+  elseif dir == RIGHT then
+    colX = 54 * 12
+  end
 
   while idex > 0 do
-    space = self.parkingSpaces[ idex ]
+    local space = self.parkingSpaces[ idex ]
 
-    if dir == LEFT then
-      side = math.floor(54)
-      atX = side >= space.x
-    else
-      side = math.floor(54 * 12)
-      atX = side >= space.x - 54
-    end
-
-    if not space.car then return end
-    if atX and ( playerY >= space.car.y and playerY < space.car.y + space.car.height ) then
-      return space
+    if space.occupied and colX == space.x then
+      if space.car then
+        if playerY >= space.car.y and playerY < space.car.y + space.car.height then
+          return space
+        end
+      else
+        return nil
+      end
     end
 
     idex = idex - 1
   end
+
+  return nil
 end
 
 function the.app:addCar( type, direction )
