@@ -139,14 +139,12 @@ function the.app:onUpdate( time )
 
     if space then
       if space.occupied and space.car and space.car.parked and space.car.unattended then
-        print("gave it a ticket")
         space.car.unattended = false
         space.car.hasTicket = true
         if the.app.carLayer:contains( space.car.meter ) then
           the.app.carLayer:remove( space.car.meter )
         end
-        local ding = DingText:new{ x = space.car.x, y = space.car.y }
-        the.app.playerLayer:add(ding)
+        space.car:dingCar()
         playSound("res/ticket.wav")
         the.app.score = the.app.score + 150
       end
@@ -236,9 +234,7 @@ function the.app:getParkingSpace( dir, playerY )
     end
 
     if not space.car then return end
-    print("in the x: " .. tostring(atX))
     if atX and ( playerY >= space.car.y and playerY < space.car.y + space.car.height ) then
-      print("found a space with a car")
       return space
     end
 

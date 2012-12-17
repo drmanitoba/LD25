@@ -25,7 +25,8 @@ Car = MovingTile:extend
   meterTime = math.random( 10, 20 ),
   unattendedTime = math.random( 10 ),
   flashPromise = nil,
-  hasTicket = false
+  hasTicket = false,
+  ding = nil
 }
 
 function Car:onNew()
@@ -273,6 +274,19 @@ function Car:checkForCollisions()
   end
 
   return false
+end
+
+function Car:dingCar()
+  self.ding = DingText:new{ x = self.x, y = self.y }
+  the.app.playerLayer:add(self.ding)
+
+  the.view.tween:start( self.ding, "alpha", 0, 3)
+  :andThen(bind(self, "removeDing"))
+end
+
+function Car:removeDing()
+  print("remove ding")
+  the.app.playerLayer:remove(self.ding)
 end
 
 ---------------------------------------------------------------------------------
