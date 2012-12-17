@@ -131,7 +131,7 @@ function the.app:onStartFrame()
 end
 
 function the.app:onUpdate( time )
-  if the.keys:pressed('return') then
+  if the.keys:pressed('z') then
     local space
     local playerx = math.floor(the.player.x)
 
