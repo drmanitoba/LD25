@@ -22,7 +22,7 @@
   <image source="tiles.png" width="378" height="108"/>
  </tileset>
  <tileset firstgid="18" name="Player" tilewidth="54" tileheight="54">
-  <image source="maid.png" width="54" height="54"/>
+  <image source="maid.png" width="108" height="54"/>
   <tile id="0">
    <properties>
     <property name="_the" value="player"/>
