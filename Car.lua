@@ -172,6 +172,8 @@ function Car:driveOff()
 
   self.parked = false
   self.parking = false
+  
+  -- need another flag for unparking
 
   if not self.hasTicket then
     playSound("res/strike.wav")
@@ -190,7 +192,7 @@ function Car:driveOff()
   the.view.tween:start( self, 'rotation', (self.drivingDirection == UP and self.upRot or self.downRot) - math.rad( 30 ), speed * 2 )
   :andThen(
     function()
-      the.view.tween:start( self, 'y', self:roundYToGrid( self.parkingY + (self.drivingDirection == UP and -halfH or halfH) ), speed )
+      the.view.tween:start( self, 'y', self.parkingY, speed )
       the.view.tween:start( self, 'x', self:roundXToGrid( self.drivingDirection == UP and self.rightLane or self.leftLane ), speed )
       the.view.tween:start( self, 'rotation', self.drivingDirection == UP and self.upRot or self.downRot, speed * 2 )
       :andThen(
