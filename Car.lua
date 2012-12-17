@@ -159,7 +159,6 @@ function Car:startMeter()
 end
 
 function Car:startWait()
-  print("Car updating: " .. tostring(self))
   self.unattended = true
   
   the.view.timer:after( self.unattendedTime, bind( self, "driveOff" ) )

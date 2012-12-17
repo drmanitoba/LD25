@@ -138,12 +138,8 @@ function the.app:onUpdate( time )
     end
 
     if space then
-      print("space occupied: " .. tostring(space.occupied))
-      print("space car: " .. tostring(space.car))
-      print("space car parked: " .. tostring(space.car.parked))
-      print("space car unattended: " .. tostring(space.car.unattended))
       if space.occupied and space.car and space.car.parked and space.car.unattended then
-        print("this car can get a ticket")
+        print("gave it a ticket")
         space.car.unattended = false
         space.car.hasTicket = true
         if the.app.carLayer:contains( space.car.meter ) then
@@ -226,18 +222,22 @@ end
 function the.app:getParkingSpace( dir, playerY )
   local idex = table.getn( self.parkingSpaces )
   local side
-
-  if dir == LEFT then
-    side = math.floor(54)
-  else
-    side = math.floor(54 * 12)
-  end
+  local atX
 
   while idex > 0 do
     space = self.parkingSpaces[ idex ]
 
+    if dir == LEFT then
+      side = math.floor(54)
+      atX = side >= space.x
+    else
+      side = math.floor(54 * 12)
+      atX = side >= space.x - 54
+    end
+
     if not space.car then return end
-    if side == space.car.x and ( playerY >= space.car.y and playerY < space.car.y + space.car.height ) then
+    print("in the x: " .. tostring(atX))
+    if atX and ( playerY >= space.car.y and playerY < space.car.y + space.car.height ) then
       print("found a space with a car")
       return space
     end
