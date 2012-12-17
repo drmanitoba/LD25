@@ -7,8 +7,13 @@ require 'Player'
 require 'MapView'
 require 'Score'
 require 'DingText'
+require 'StartView'
 
 ---------------------------------------------------------------------------------------------------------
+START = "startState"
+MAIN_GAME = "mainGameState"
+DEATH = "deathState"
+FIRED = "firedState"
 
 function math.round( val )
   local a = math.floor( val )
@@ -33,13 +38,22 @@ the.app = App:new
   carLayer = nil,
   playerLayer = nil,
   score = 0,
-  gameMusic = nil
+  gameMusic = nil,
+  gameState = START
 }
 
 function the.app:onRun()
+  self.gameMusic = sound("res/main_music.mp3")
+  the.app:initStart()
+end
+
+function the.app:initStart()
+  self.view = StartView:new()
+end
+
+function the.app:initGame()
   self.view = MapView:new()
   self.hud = Score:new{ x = 10, y = 10 }
-  self.gameMusic = sound("res/main_music.mp3")
 
   self.parkingSpaces = {}
   self.parkingSpaces[1] = {
@@ -101,7 +115,7 @@ function the.app:onRun()
 
   self.carLayer = Group:new()
   self:add( self.carLayer )
-  
+
   self.playerLayer = Group:new()
   self:add( self.playerLayer )
   self.view.player:remove( the.player )
@@ -131,6 +145,26 @@ function the.app:onStartFrame()
 end
 
 function the.app:onUpdate( time )
+
+  if the.app.gameState == START then
+    self:startUpdate( time )
+  elseif the.app.gameState == MAIN_GAME then
+    self:gameUpdate( time )
+  elseif the.app.gameState == DEATH then
+    self:deathUpdate( time )
+  elseif the.app.gameState == FIRED then
+    self:firedUpdate( time )
+  end
+end
+
+function the.app:startUpdate( time )
+  if the.keys:pressed('z') then
+    the.app:initGame()
+    the.app.gameState = MAIN_GAME
+  end
+end
+
+function the.app:gameUpdate( time )
   if the.keys:pressed('z') then
     local space
     local playerx = math.floor(the.player.x)
