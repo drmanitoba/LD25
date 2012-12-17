@@ -137,10 +137,8 @@ function the.app:onUpdate( time )
 
     -- Check if player x is 0 or 54*13
     if playerx > math.floor(54 * 12) then
-      print("checking from the right")
       space = self:getParkingSpace( RIGHT, the.player.y )
     elseif playerx < 54 then
-      print("checking from the left")
       space = self:getParkingSpace( LEFT, the.player.y )
     end
 
@@ -173,24 +171,24 @@ function the.app:onUpdate( time )
     cf = math.floor( (car.drivingDirection == UP and cy or cy + car.height) )
     cb = math.floor( (car.drivingDirection == UP and cy + car.height or cy) )
     if not car.parked and not car.parking and car:collide( the.player ) then
-      --print( "player x: " .. px .. ", y: " .. py )
-      --print( "car x: " .. cx .. ", y: " .. cy )
-      --print( "car front: " .. cf )
+      print( "player x: " .. px .. ", y: " .. py )
+      print( "car x: " .. cx .. ", y: " .. cy )
+      print( "car front: " .. cf )
       if math.floor( px + the.player.width ) >= cx and px <= math.floor( cx + car.width ) then
         if car.drivingDirection == UP then
           if py <= cb then
             if py >= math.floor( cf + (car.height * 0.25) ) and py <= cf then
-              --print( "Up Front" )
+              print( "Up Front" )
               --  Front
               the.player:die()
             else
-              --print( "Up Side" )
+              print( "Up Side" )
               --  Side
               the.player.x = (px > cx and math.floor( cx + car.width + 1 ) or math.floor( cx - the.player.width - 1 ))
               the.player.targetX = the.player.x
             end
           else
-            --print( "Up Back" )
+            print( "Up Back" )
             --  Back
             the.player.x = (px > cx and math.floor( cx + car.width + 1 ) or math.floor( cx - the.player.width - 1 ))
             the.player.targetX = the.player.x
@@ -198,17 +196,17 @@ function the.app:onUpdate( time )
         else
           if py >= cb then
             if py >= math.floor( cy + (car.height * 0.75)) and py <= cf then
-              --print( "Down Front" )
+              print( "Down Front" )
               --  Front
               the.player:die()
             else
-              --print( "Down Side" )
+              print( "Down Side" )
               --  Side
               the.player.x = (px > cx and math.floor( cx + car.width + 1 ) or math.floor( cx - the.player.width - 1 ))
               the.player.targetX = the.player.x
             end
           else
-            --print( "Down Back" )
+            print( "Down Back" )
             --  Back
             the.player.x = (px > cx and math.floor( cx + car.width + 1 ) or math.floor( cx - the.player.width - 1 ))
             the.player.targetX = the.player.x
