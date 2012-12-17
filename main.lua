@@ -6,6 +6,7 @@ require 'Car'
 require 'Player'
 require 'MapView'
 require 'Score'
+require 'DingText'
 
 ---------------------------------------------------------------------------------------------------------
 
@@ -130,21 +131,29 @@ function the.app:onUpdate( time )
     local playerx = math.floor(the.player.x)
 
     -- Check if player x is 0 or 54*13
-    if playerx == math.floor((54 * 13) - 1) then
+    if playerx > math.floor(54 * 12) and playerx <= math.floor(54 * 13) then
       space = self:getParkingSpace( RIGHT, the.player.y )
-    elseif playerx == 0 then
+    elseif playerx >= 0 and playerx < 54 then
       space = self:getParkingSpace( LEFT, the.player.y )
     end
 
-
-    if space and space.occupied and space.car.parked and space.car.unattended then
-      space.car.unattended = false
-      space.car.hasTicket = true
-      if the.app.carLayer:contains( space.car.meter ) then
-        the.app.carLayer:remove( space.car.meter )
+    if space then
+      print("space occupied: " .. tostring(space.occupied))
+      print("space car: " .. tostring(space.car))
+      print("space car parked: " .. tostring(space.car.parked))
+      print("space car unattended: " .. tostring(space.car.unattended))
+      if space.occupied and space.car and space.car.parked and space.car.unattended then
+        print("this car can get a ticket")
+        space.car.unattended = false
+        space.car.hasTicket = true
+        if the.app.carLayer:contains( space.car.meter ) then
+          the.app.carLayer:remove( space.car.meter )
+        end
+        local ding = DingText:new{ x = space.car.x, y = space.car.y }
+        the.app.playerLayer:add(ding)
+        playSound("res/ticket.wav")
+        the.app.score = the.app.score + 150
       end
-      playSound("res/ticket.wav")
-      the.app.score = the.app.score + 150
     end
   end
   
@@ -216,20 +225,25 @@ end
 
 function the.app:getParkingSpace( dir, playerY )
   local idex = table.getn( self.parkingSpaces )
-  local side = dir == LEFT and 54 or 54 * 12
+  local side
+
+  if dir == LEFT then
+    side = math.floor(54)
+  else
+    side = math.floor(54 * 12)
+  end
 
   while idex > 0 do
     space = self.parkingSpaces[ idex ]
 
     if not space.car then return end
-    if side == space.x and ( playerY >= space.car.y and playerY < space.car.y + space.car.height ) then
+    if side == space.car.x and ( playerY >= space.car.y and playerY < space.car.y + space.car.height ) then
+      print("found a space with a car")
       return space
     end
 
     idex = idex - 1
   end
-
-  return nil
 end
 
 function the.app:addCar( type, direction )

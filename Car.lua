@@ -72,6 +72,9 @@ function Car:setDrivingDirection( dir )
   local rightLanes = { 8, 9.5, 11 }
   self.drivingDirection = dir
   self.lookingForParking = true
+  self.parking = false
+  self.parked = false
+  self.unattended = false
 
   if dir == DOWN then
     self.targetY = the.app.height
@@ -156,6 +159,7 @@ function Car:startMeter()
 end
 
 function Car:startWait()
+  print("Car updating: " .. tostring(self))
   self.unattended = true
   
   the.view.timer:after( self.unattendedTime, bind( self, "driveOff" ) )
@@ -164,6 +168,9 @@ end
 
 function Car:driveOff()
   the.view.timer:stop( bind( self, "flashMeter" ) )
+
+  self.parked = false
+  self.parking = false
 
   if not self.hasTicket then
     playSound("res/strike.wav")
@@ -187,8 +194,6 @@ function Car:driveOff()
       the.view.tween:start( self, 'rotation', self.drivingDirection == UP and self.upRot or self.downRot, speed * 2 )
       :andThen(
         function()
-          self.parked = false
-          self.parking = false
           self.parkingSpace[ "occupied" ] = false
           self.parkingSpace[ "car" ] = nil
           self.parkingSpace = nil
