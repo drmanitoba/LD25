@@ -8,6 +8,7 @@ require 'MapView'
 require 'Score'
 require 'DingText'
 require 'StartView'
+require 'DeathView'
 
 ---------------------------------------------------------------------------------------------------------
 START = "startState"
@@ -55,7 +56,7 @@ the.app = App:new
   lastPlayerPos = nil,
   score = 0,
   gameMusic = nil,
-  gameState = START
+  gameState =  nil
 }
 
 function the.app:onRun()
@@ -64,7 +65,13 @@ function the.app:onRun()
 end
 
 function the.app:initStart()
+  the.app.gameState = START
   self.view = StartView:new()
+end
+
+function the.app:initDeath()
+  the.app.gameState = DEATH
+  self.view = DeathView:new()
 end
 
 function the.app:initGame()
@@ -259,6 +266,13 @@ function the.app:gameUpdate( time )
   end
   
   self.lastPlayerPos = { math.floor( the.player.x ), math.floor( the.player.y ) }
+end
+
+function the.app:deathUpdate()
+  if the.keys:pressed('z') then
+    the.app:initGame()
+    the.app.gameState = MAIN_GAME
+  end
 end
 
 function the.app:onEndFrame()
