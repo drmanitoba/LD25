@@ -252,7 +252,7 @@ function the.app:gameUpdate( time )
         --print( 'side: ' .. side )
         --print( 'parking? ' .. tostring( car.parking ) .. ' parked? ' .. tostring( car.parked ) )
         
-        if car.parking or car.parked or car.drivingDirection ~= side then
+        if car.parked or car.drivingDirection ~= side then
           if side == UP or side == DOWN then
             the.player.y = self.lastPlayerPos[2]
           else

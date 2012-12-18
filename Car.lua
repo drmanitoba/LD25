@@ -17,6 +17,7 @@ Car = MovingTile:extend
   leftParkingX = math.floor( 54 ),
   parked = false,
   parking = false,
+  unparking = false,
   unattended = false,
   parkingX = 0,
   parkingY = 0,
@@ -35,7 +36,7 @@ function Car:onNew()
 end
 
 function Car:onUpdate()
-  if self.parked then
+  if self.parked or self.unparking then
     return nil
   end
   
@@ -76,6 +77,7 @@ function Car:setDrivingDirection( dir )
   self.lookingForParking = true
   self.parking = false
   self.parked = false
+  self.unparking = false
   self.unattended = false
 
   if dir == DOWN then
@@ -119,33 +121,42 @@ function Car:checkForParking()
 end
 
 function Car:park()
-  local halfX = self.drivingDirection == UP and self.x + ((self.parkingX - self.x) * 0.5) or self.x - ((self.x - self.parkingX) * 0.5)
-  local speed = self.drivingDirection == UP and 0.25 or 0.09375
+  local ty = self:roundYToGrid( self.parkingY )
+  local tx = self:roundXToGrid( self.parkingX )
+  local dy = math.floor( self.drivingDirection == UP and self.y - ty or ty - self.y )
+  local yc = dy * 0.5
+  local y1 = math.floor( self.drivingDirection == UP and self.y - yc or self.y + yc )
+  local tr = self.rotation
+  local r1 = tr + math.rad( 30 )
+  local sp = 0.25
+  local hs = 0.125
   
   self.lookingForParking = false
   
-  --  TODO: Needs work; fine tune
-  
-  the.view.tween:start( self, 'x', halfX, speed )
-  the.view.tween:start( self, 'y', self:roundYToGrid( self.parkingY ), speed )
-  the.view.tween:start( self, 'rotation', (self.drivingDirection == UP and self.upRot or self.downRot) + math.rad( 30 ), speed * 2 )
+  the.view.tween:start( self, 'y', y1, sp )
   :andThen(
     function()
-      the.view.tween:start( self, 'x', self:roundXToGrid( self.parkingX ), speed )
-      the.view.tween:start( self, 'rotation', self.drivingDirection == UP and self.upRot or self.downRot, speed * 2 )
+      the.view.tween:start( self, 'x', tx, sp )
+      the.view.tween:start( self, 'y', ty, sp )
+      the.view.tween:start( self, 'rotation', r1, hs )
       :andThen(
         function()
-          self.meter = Fill:new{
-            fill = {0, 255, 0},
-            width = 20,
-            height = self.height,
-            x = self.x + (self.drivingDirection == UP and (self.width + 26) or -46),
-            y = self.y
-          }
-          the.app.carLayer:add( self.meter )
-          
-          self:rerollTimes()
-          self:startMeter()
+          the.view.tween:start( self, 'rotation', tr, hs )
+          :andThen(
+            function()
+              self.meter = Fill:new{
+                fill = {0, 255, 0},
+                width = 20,
+                height = self.height,
+                x = self.x + (self.drivingDirection == UP and (self.width + 26) or -46),
+                y = self.y
+              }
+              the.app.carLayer:add( self.meter )
+              
+              self:rerollTimes()
+              self:startMeter()
+            end
+          )
         end
       )
     end
@@ -172,8 +183,7 @@ function Car:driveOff()
 
   self.parked = false
   self.parking = false
-  
-  -- need another flag for unparking
+  self.unparking = true
 
   if not self.hasTicket then
     -- Lose points
@@ -185,23 +195,35 @@ function Car:driveOff()
     the.app.carLayer:remove( self.meter )
   end
   
-  local targX = self.drivingDirection == UP and self.rightLane or self.leftLane
-  local halfX = self.drivingDirection == UP and math.floor((self.rightParkingX - targX) * 0.5) or math.floor((targX - self.leftParkingX) * 0.5)
-  local halfH = math.floor( self.height * 0.5 )
-  local speed = self.drivingDirection == UP and 0.25 or 0.09375
+  local ty = self:roundYToGrid( self.drivingDirection == UP and self.parkingY - self.height or self.parkingY + self.height )
+  local tx = self:roundXToGrid( self.drivingDirection == UP and self.parkingX - the.app.view.gridSize or self.parkingX + the.app.view.gridSize )
+  local dy = math.floor( self.drivingDirection == UP and self.y - ty or ty - self.y )
+  local yc = dy * 0.5
+  local hh = self.height * 0.5
+  local y1 = math.floor( self.drivingDirection == UP and self.y + hh or self.y - hh )
+  local y2 = math.floor( self.drivingDirection == UP and self.y - yc or self.y + yc )
+  local tr = self.rotation
+  local r1 = tr - math.rad( 30 )
+  local sp = 0.25
+  local hs = 0.125
   
-  the.view.tween:start( self, 'x', self.x + (self.drivingDirection == UP and -halfX or halfX), speed )
-  the.view.tween:start( self, 'rotation', (self.drivingDirection == UP and self.upRot or self.downRot) - math.rad( 30 ), speed * 2 )
+  the.view.tween:start( self, 'y', y1, sp )
   :andThen(
     function()
-      the.view.tween:start( self, 'y', self.parkingY, speed )
-      the.view.tween:start( self, 'x', self:roundXToGrid( self.drivingDirection == UP and self.rightLane or self.leftLane ), speed )
-      the.view.tween:start( self, 'rotation', self.drivingDirection == UP and self.upRot or self.downRot, speed * 2 )
+      the.view.tween:start( self, 'x', tx, sp )
+      the.view.tween:start( self, 'y', ty, sp )
+      the.view.tween:start( self, 'rotation', r1, hs )
       :andThen(
         function()
-          self.parkingSpace[ "occupied" ] = false
-          self.parkingSpace[ "car" ] = nil
-          self.parkingSpace = nil
+          the.view.tween:start( self, 'rotation', tr, hs )
+          :andThen(
+            function()
+              self.parkingSpace[ "occupied" ] = false
+              self.parkingSpace[ "car" ] = nil
+              self.parkingSpace = nil
+              self.unparking = false
+            end
+          )
         end
       )
     end
@@ -249,7 +271,7 @@ function Car:checkForCollisions()
   while idx > 0 do
     car = the.app.cars[ idx ]
 
-    if ( sid and sid == idx ) then-- or car.parked or car.parking then
+    if ( sid and sid == idx ) then
       break
     end
 
