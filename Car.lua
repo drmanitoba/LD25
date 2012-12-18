@@ -176,7 +176,9 @@ function Car:driveOff()
   -- need another flag for unparking
 
   if not self.hasTicket then
+    -- Lose points
     playSound("res/strike.wav")
+    the.app.score = the.app.score - 150
   end
 
   if the.app.carLayer:contains( self.meter ) then

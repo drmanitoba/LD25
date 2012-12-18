@@ -56,7 +56,8 @@ the.app = App:new
   lastPlayerPos = nil,
   score = 0,
   gameMusic = nil,
-  gameState =  nil
+  gameState =  nil,
+  losingScore = -1500
 }
 
 function the.app:onRun()
@@ -75,6 +76,7 @@ function the.app:initDeath()
 end
 
 function the.app:initGame()
+  the.app.score = 0
   self.view = MapView:new()
   self.view.gridSize = 54
   self.hud = Score:new{ x = 10, y = 10 }
@@ -169,6 +171,10 @@ function the.app:onStartFrame()
 end
 
 function the.app:onUpdate( time )
+  if the.app.score == the.app.losingScore then
+    the.player:fire()
+    the.view.timer:after( 5, bind( self, "endGame"))
+  end
 
   if the.app.gameState == START then
     self:startUpdate( time )

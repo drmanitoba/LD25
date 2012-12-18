@@ -47,8 +47,13 @@ function Player:changePosition( dir )
   self.changingPositionCounter = the.app.fps / 4
 end
 
-function Player:kill()
+function Player:fire()
   self.solid = false
+  self.active = false
+end
+
+function Player:kill()
+  self:fire()
   self.imageOffset = { x = 54, y = 0 }
 end
 
