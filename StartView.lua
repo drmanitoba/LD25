@@ -13,9 +13,9 @@ StartView = View:extend
     image = "res/super_meter_maid_title.png"
   },
   startGameText = StartText:new{
-    x = 430,
+    x = 390,
     y = 600,
-    text = "Press 'z' to start"
+    text = "Press 'enter' to start"
   },
   creditsText = StartText:new{
     x = 430,

@@ -1,7 +1,7 @@
 DeathText = Text:extend
 {
   font = { "res/Minecraftia.ttf", 24 },
-  width = 350,
+  width = 420,
   height = 40
 }
 
@@ -15,7 +15,7 @@ DeathView = View:extend
   deathText = DeathText:new{
     x = 50,
     y = 650,
-    text = "Press 'z' to try again"
+    text = "Press 'enter' to try again"
   },
 }
 

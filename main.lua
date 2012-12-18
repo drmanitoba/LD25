@@ -199,7 +199,7 @@ function the.app:onUpdate( time )
 end
 
 function the.app:startUpdate( time )
-  if the.keys:pressed('z') then
+  if the.keys:pressed('return') then
     the.app:initGame()
     the.app.gameState = MAIN_GAME
   end
@@ -209,6 +209,9 @@ function the.app:gameUpdate( time )
   if the.keys:pressed('z') then
     local space
     local playerx = math.floor(the.player.x)
+
+    the.view.tween:start( self.tutorialText, "alpha", 0, 3)
+    :andThen(bind(self, "removeTutorialText"))
 
     -- Check if player x is 0 or 54*13
     if playerx > math.floor(54 * 12) then
@@ -294,14 +297,7 @@ function the.app:endGame()
 end
 
 function the.app:deathUpdate()
-  if the.keys:pressed('z') then
-    the.app:initGame()
-    the.app.gameState = MAIN_GAME
-  end
-end
-
-function the.app:deathUpdate()
-  if the.keys:pressed('z') then
+  if the.keys:pressed('return') then
     the.app:initGame()
     the.app.gameState = MAIN_GAME
   end
@@ -354,4 +350,8 @@ function the.app:addCar( type, direction )
 
   self.cars[ idx ] = car
   self.carLayer:add( car )
+end
+
+function the.app:removeTutorialText()
+  self:remove(self.tutorialText)
 end
