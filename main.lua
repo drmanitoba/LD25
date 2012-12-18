@@ -352,5 +352,7 @@ function the.app:addCar( type, direction )
 end
 
 function the.app:removeTutorialText()
-  self:remove(self.tutorialText)
+  if self:contains( self.tutorialText ) then
+    self:remove(self.tutorialText)
+  end
 end

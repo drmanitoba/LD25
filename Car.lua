@@ -79,6 +79,7 @@ function Car:setDrivingDirection( dir )
   self.parked = false
   self.unparking = false
   self.unattended = false
+  self.hasTicket = false
 
   if dir == DOWN then
     self.targetY = the.app.height
@@ -313,7 +314,9 @@ function Car:dingCar()
 end
 
 function Car:removeDing()
-  the.app.playerLayer:remove(self.ding)
+  if the.app.playerLayer:contains( self.ding ) then
+    the.app.playerLayer:remove(self.ding)
+  end
 end
 
 ---------------------------------------------------------------------------------
