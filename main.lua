@@ -165,6 +165,17 @@ function the.app:initGame()
 
   self.gameMusic:setLooping(true)
   self.gameMusic:play()
+
+  self.tutorialText = Text:new{
+    font = { "res/Minecraftia.ttf", 24 },
+    width = 450,
+    height = 40,
+    x = 185,
+    y = 620,
+    text = "press 'z' to give a ticket"
+  }
+
+  self:add(self.tutorialText)
 end
 
 function the.app:onStartFrame()
