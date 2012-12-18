@@ -244,13 +244,18 @@ function the.app:gameUpdate( time )
       
       if car:collide( the.player ) then
         
-        if self.lastPlayerPos[1] >= car:roundXToGrid( car.x ) and self.lastPlayerPos[1] <= car:roundXToGrid( car.x + the.app.view.gridSize ) then
-          if self.lastPlayerPos[2] <= car:roundYToGrid( car.y ) then
-            side = UP
-          elseif self.lastPlayerPos[2] >= car:roundYToGrid( car.y + ( the.app.view.gridSize * 2 ) ) then
+        if self.lastPlayerPos[1] >= car:roundXToGrid( car.x ) and self.lastPlayerPos[1] < car:roundXToGrid( car.x + the.app.view.gridSize ) then
+          
+          if self.lastPlayerPos[2] <= NEARLY_ZERO and car.y <= the.app.view.gridSize then
             side = DOWN
           else
-            side = car.drivingDirection == UP and DOWN or UP
+            if self.lastPlayerPos[2] <= car:roundYToGrid( car.y ) then
+              side = UP
+            elseif self.lastPlayerPos[2] >= car:roundYToGrid( car.y + ( the.app.view.gridSize * 2 ) ) then
+              side = DOWN
+            else
+              side = car.drivingDirection == UP and DOWN or UP
+            end
           end
         else
           if self.lastPlayerPos[1] < car:roundXToGrid( car.x ) then
