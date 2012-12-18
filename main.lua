@@ -1,5 +1,5 @@
-STRICT = true
-DEBUG = true
+STRICT = false
+DEBUG = false
 require 'zoetrope'
 require 'MovingTile'
 require 'Car'
