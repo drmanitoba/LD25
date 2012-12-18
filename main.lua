@@ -223,11 +223,12 @@ function the.app:gameUpdate( time )
       car = self.cars[ idx ]
       
       if car:collide( the.player ) then
-        --print( 'car x: ' .. car.x .. ', y: ' .. car.y )
+        --print( 'car x: ' .. car:roundXToGrid( car.x ) .. ', y: ' .. car:roundYToGrid( car.y ) )
+        --print( 'car x + grid width: ' .. car:roundXToGrid( car.x + the.app.view.gridSize ) )
         --print( 'pla x: ' ..self.lastPlayerPos[1] .. ', y: ' .. self.lastPlayerPos[2] )
         --print( 'car driving direction: ' .. car.drivingDirection )
         
-        if self.lastPlayerPos[1] >= car:roundXToGrid( car.x ) and self.lastPlayerPos[1] <= car:roundXToGrid( car.x + the.app.view.gridSize ) then
+        if self.lastPlayerPos[1] >= car:roundXToGrid( car.x ) and self.lastPlayerPos[1] <= car:roundXToGrid( car.x + the.app.view.gridSize ) - 1 then
           if self.lastPlayerPos[2] <= car:roundYToGrid( car.y ) then
             side = UP
           elseif self.lastPlayerPos[2] >= car:roundYToGrid( car.y + ( the.app.view.gridSize * 2 ) ) then
