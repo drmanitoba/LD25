@@ -144,12 +144,15 @@ function Car:park()
           the.view.tween:start( self, 'rotation', tr, hs )
           :andThen(
             function()
+              local hw = math.floor( the.app.view.gridSize * 0.5 )
+              local mx = math.floor( self.drivingDirection == UP and the.app.width - hw or hw - 20 )
+              local my = self.y
               self.meter = Fill:new{
                 fill = {0, 255, 0},
                 width = 20,
                 height = self.height,
-                x = self.x + (self.drivingDirection == UP and (self.width + 26) or -46),
-                y = self.y
+                x = mx,
+                y = my
               }
               the.app.carLayer:add( self.meter )
               
@@ -247,7 +250,7 @@ function Car:checkForParkingSpace( space )
   local yDist = self.drivingDirection == UP and self.y - parkingY or parkingY - self.y
   
   if space[ "x" ] == parkingX then
-    if yDist < self.height then
+    if yDist > 0 and yDist < self.height then
       if not space[ "occupied" ] then
         self.parkingX = self:roundXToGrid( space[ "x" ] )
         self.parkingY = self:roundYToGrid( parkingY - halfH )
