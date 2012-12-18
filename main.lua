@@ -258,6 +258,8 @@ function the.app:gameUpdate( time )
         else
           the.player:die()
           the.app.view:flash( {255,0,0}, 0.05 )
+          playSound("res/hit.wav")
+          self:endGame()
         end
       end
       
@@ -266,6 +268,12 @@ function the.app:gameUpdate( time )
   end
   
   self.lastPlayerPos = { math.floor( the.player.x ), math.floor( the.player.y ) }
+end
+
+function the.app:endGame()
+  the.app.gameState = DEATH
+  the.app.gameMusic:stop()
+  self:initDeath()
 end
 
 function the.app:deathUpdate()
