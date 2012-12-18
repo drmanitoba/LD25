@@ -3,6 +3,7 @@ Car = MovingTile:extend
   image = "res/cars.png",
   width = 54,
   height = 108,
+  paint = '',
   drivingDirection = DOWN,
   targetX = 0,
   targetY = 0,
@@ -11,9 +12,9 @@ Car = MovingTile:extend
   upRot = math.rad( 180 ),
   downRot = math.rad( 0 ),
   rightLane = 54 * 11,
-  rightParkingX = 54 * 12,
+  rightParkingX = math.floor( 54 * 12 ),
   leftLane = 54 * 2,
-  leftParkingX = 54,
+  leftParkingX = math.floor( 54 ),
   parked = false,
   parking = false,
   unattended = false,
@@ -126,11 +127,11 @@ function Car:park()
   --  TODO: Needs work; fine tune
   
   the.view.tween:start( self, 'x', halfX, speed )
-  the.view.tween:start( self, 'y', self.parkingY, speed )
+  the.view.tween:start( self, 'y', self:roundYToGrid( self.parkingY ), speed )
   the.view.tween:start( self, 'rotation', (self.drivingDirection == UP and self.upRot or self.downRot) + math.rad( 30 ), speed * 2 )
   :andThen(
     function()
-      the.view.tween:start( self, 'x', self.parkingX, speed )
+      the.view.tween:start( self, 'x', self:roundXToGrid( self.parkingX ), speed )
       the.view.tween:start( self, 'rotation', self.drivingDirection == UP and self.upRot or self.downRot, speed * 2 )
       :andThen(
         function()
@@ -171,6 +172,8 @@ function Car:driveOff()
 
   self.parked = false
   self.parking = false
+  
+  -- need another flag for unparking
 
   if not self.hasTicket then
     playSound("res/strike.wav")
@@ -189,8 +192,8 @@ function Car:driveOff()
   the.view.tween:start( self, 'rotation', (self.drivingDirection == UP and self.upRot or self.downRot) - math.rad( 30 ), speed * 2 )
   :andThen(
     function()
-      the.view.tween:start( self, 'y', self.parkingY + (self.drivingDirection == UP and -halfH or halfH), speed )
-      the.view.tween:start( self, 'x', self.drivingDirection == UP and self.rightLane or self.leftLane, speed )
+      the.view.tween:start( self, 'y', self.parkingY, speed )
+      the.view.tween:start( self, 'x', self:roundXToGrid( self.drivingDirection == UP and self.rightLane or self.leftLane ), speed )
       the.view.tween:start( self, 'rotation', self.drivingDirection == UP and self.upRot or self.downRot, speed * 2 )
       :andThen(
         function()
@@ -222,8 +225,8 @@ function Car:checkForParkingSpace( space )
   if space[ "x" ] == parkingX then
     if yDist < self.height then
       if not space[ "occupied" ] then
-        self.parkingX = space[ "x" ]
-        self.parkingY = parkingY - halfH
+        self.parkingX = self:roundXToGrid( space[ "x" ] )
+        self.parkingY = self:roundYToGrid( parkingY - halfH )
         space[ "occupied" ] = true
         space[ "car" ] = self
         self.parking = true
@@ -237,30 +240,28 @@ function Car:checkForParkingSpace( space )
 end
 
 function Car:checkForCollisions()
+  local sid = table.getIndex( the.app.cars, self )
   local idx = table.getn( the.app.cars )
   local car = nil
 
   while idx > 0 do
     car = the.app.cars[ idx ]
 
-    if car == self then
-      break
-    end
-    if car.parked or car.parking then
+    if ( sid and sid == idx ) then-- or car.parked or car.parking then
       break
     end
 
     if self:collide( car ) then
       if self.drivingDirection == UP then
-        if car.y < self.y then
+        if car.y <= self.y then
           self.y = car.y + car.height
           self.moveY = math.min( car.moveY, self.height / math.random( 10, 30 ) )
         else
           car.y = self.y + self.height
           car.moveY = math.min( self.moveY, car.height / math.random( 10, 30 ) )
         end
-      elseif self.drivingDirection == DOWN then
-        if car.y > self.y then
+      else
+        if car.y >= self.y then
           self.y = car.y - car.height
           self.moveY = math.min( car.moveY, self.height / math.random( 10, 30 ) )
         else
@@ -285,7 +286,6 @@ function Car:dingCar()
 end
 
 function Car:removeDing()
-  --print("remove ding")
   the.app.playerLayer:remove(self.ding)
 end
 
@@ -293,14 +293,17 @@ end
 
 RedCar = Car:extend
 {
+  paint = 'red'
 }
 
 BlueCar = Car:extend
 {
-  imageOffset = { x = 55, y = 0 }
+  imageOffset = { x = 55, y = 0 },
+  paint = 'blue'
 }
 
 GreenCar = Car:extend
 {
-  imageOffset = { x = 110, y = 0 }
+  imageOffset = { x = 110, y = 0 },
+  paint = 'green'
 }
