@@ -223,12 +223,11 @@ function the.app:gameUpdate( time )
       car = self.cars[ idx ]
       
       if car:collide( the.player ) then
-        --print( 'car x: ' .. car:roundXToGrid( car.x ) .. ', y: ' .. car:roundYToGrid( car.y ) )
-        --print( 'car x + grid width: ' .. car:roundXToGrid( car.x + the.app.view.gridSize ) )
+        --print( 'car x: ' .. car.x .. ', y: ' .. car.y )
         --print( 'pla x: ' ..self.lastPlayerPos[1] .. ', y: ' .. self.lastPlayerPos[2] )
         --print( 'car driving direction: ' .. car.drivingDirection )
         
-        if self.lastPlayerPos[1] >= car:roundXToGrid( car.x ) and self.lastPlayerPos[1] < car:roundXToGrid( car.x + the.app.view.gridSize ) then
+        if self.lastPlayerPos[1] >= car:roundXToGrid( car.x ) and self.lastPlayerPos[1] <= car:roundXToGrid( car.x + the.app.view.gridSize ) then
           if self.lastPlayerPos[2] <= car:roundYToGrid( car.y ) then
             side = UP
           elseif self.lastPlayerPos[2] >= car:roundYToGrid( car.y + ( the.app.view.gridSize * 2 ) ) then
@@ -257,10 +256,10 @@ function the.app:gameUpdate( time )
           the.player.targetX = the.player.x
           the.player.targetY = the.player.y
         else
-          the.player:die()
+          the.player:kill()
           the.app.view:flash( {255,0,0}, 0.05 )
           playSound("res/hit.wav")
-          self:endGame()
+          the.view.timer:after( 3, bind(self, "endGame"))
         end
       end
       
